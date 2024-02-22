@@ -21,6 +21,25 @@ class Atom:
       self.element=elemname[:ind1]
       self.atomNum=elemname[ind1:ind2+1]
 
+
+
+    self.symbol=inputList.pop(0)
+    self.positionVector=[inputList.pop(0),inputList.pop(0),inputList.pop(0)]
+    for v in range(3):
+      elem=self.positionVector[v]
+      if ('(' in elem ):
+        self.positionVector[v]=float(elem[:elem.index("(")])
+      else:
+        self.positionVector[v]=float(elem)
+    self.remainingNumbers=inputList
+  
+  def __str__(self):
+    atomletter="No letter" if self.atomLetter=="" else self.atomLetter
+    return f"Name: {self.element}, symbol: {self.symbol} position : {self.positionVector}, elemNum: {self.atomNum}, atom letter: {atomletter}\n"
+  
+
+
+
     # if(len(elemname)>1 and str.isalpha(elemname[-1]) and str.isdigit(elemname[-2])):
     #   self.atomLetter=elemname[-1]
     #   ind1,ind2=0,0
@@ -47,14 +66,3 @@ class Atom:
     #   self.element=elemname
     #   self.atomNum=1
     #   self.atomLetter=""
-
-
-    self.positionVector=[inputList.pop(1),inputList.pop(1),inputList.pop(1)]
-    self.remainingNumbers=inputList
-  
-  def __str__(self):
-    atomletter="No letter" if self.atomLetter=="" else self.atomLetter
-    return f"Name: {self.element}, position : {self.positionVector}, elemNum: {self.atomNum}, atom letter: {atomletter}\n"
-  
-
-

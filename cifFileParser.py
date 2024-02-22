@@ -17,4 +17,7 @@ myfile=open(f"{curDir}\{allfiles[0]}",'r')
 alllines=myfile.read().split("\n")
 textofInterest=alllines[alllines.index("_atom_site_fract_z")+1:alllines.index("#END")]
 
-printNicely(textofInterest)
+allAtoms=[]
+for j in textofInterest:
+  allAtoms.append(Atom(j.split(" ")))
+
