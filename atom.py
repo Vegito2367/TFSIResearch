@@ -1,10 +1,7 @@
 class Atom:
   def __init__(self, inputList):
-
-
-
     elemname=inputList.pop(0)
-
+    
     ind1,ind2=0,0
     for i in range(len(elemname)):
       if(str.isdecimal(elemname[i])):
