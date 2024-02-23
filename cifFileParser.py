@@ -23,6 +23,6 @@ class CIFParser:
     output=[]
     for j in range(len(self.Atoms)):
       if(self.Atoms[j].symbol == symbol):
-        output.append(j)
+        output.append(self.Atoms[j])
 
     return output

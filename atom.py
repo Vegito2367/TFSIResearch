@@ -37,6 +37,10 @@ class Atom:
     atomletter="No letter" if self.atomLetter=="" else self.atomLetter
     return f"Name: {self.element}, symbol: {self.symbol} position : {self.positionVector}, elemNum: {self.atomNum}, atom letter: {atomletter}\n"
   
+  def __repr__(self):
+    atomletter="No letter" if self.atomLetter=="" else self.atomLetter
+    return f"Symbol: {self.symbol} position : {self.positionVector} elemNum: {self.atomNum}"
+  
 
 
 
