@@ -1,8 +1,6 @@
 from cifFileParser import CIFParser
 import os
-def printNicely(myList):
-    for j in myList:
-      print(j)
+
 
 folder="cifstructures"
 allFileNames=os.listdir(folder)
@@ -13,4 +11,4 @@ for file in allFileNames:
   allNitrogens.append(atomsN)
   atomsN=[]
 
-printNicely(allNitrogens)
+CIFParser.printNicely(allNitrogens)

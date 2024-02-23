@@ -4,6 +4,7 @@ from atom import Atom
 import os
 
 class CIFParser:
+  @staticmethod
   def printNicely(myList):
     for j in myList:
       print(j)
