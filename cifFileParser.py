@@ -19,10 +19,6 @@ class CIFParser:
     for j in textofInterest:
       self.Atoms.append(Atom(j.split(" ")))
 
-    self.nitrogens=next((i for i,atom in enumerate(self.Atoms) if atom.symbol == "N"),None)
-    self.sulphurs=next((i for i,atom in enumerate(self.Atoms) if atom.symbol == "S"),None)
-    print(next((i for i,atom in enumerate(self.Atoms) if atom.symbol == "H"),None))
-
   def getElementAtoms(self,symbol):
     output=[]
     for j in range(len(self.Atoms)):
@@ -30,8 +26,3 @@ class CIFParser:
         output.append(j)
 
     return output
-
-
-parser=CIFParser("testcif\AKONEU.cif")
-
-print(parser.getElementAtoms("N"))
