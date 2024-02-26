@@ -1,7 +1,7 @@
 class Atom:
   def __init__(self, inputList):
     elemname=inputList.pop(0)
-    
+    self.identifier=elemname
     ind1,ind2=0,0
     for i in range(len(elemname)):
       if(str.isdecimal(elemname[i])):
@@ -38,11 +38,16 @@ class Atom:
     return f"Name: {self.element}, symbol: {self.symbol} position : {self.positionVector}, elemNum: {self.atomNum}, atom letter: {atomletter}\n"
   
   def __repr__(self):
-    atomletter="No letter" if self.atomLetter=="" else self.atomLetter
-    return f"Symbol: {self.symbol} position : {self.positionVector} elemNum: {self.atomNum}"
+    return self.identifier
   
 
-
+  def getDistance(self,other):
+    distanceVector=[round(self.positionVector[i]-other.positionVector[i],6) for i in range(3)]
+    output=0
+    for j in distanceVector:
+      output+=j**2
+    
+    return round(output**0.5,6)
 
     # if(len(elemname)>1 and str.isalpha(elemname[-1]) and str.isdigit(elemname[-2])):
     #   self.atomLetter=elemname[-1]
