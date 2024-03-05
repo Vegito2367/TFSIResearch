@@ -11,7 +11,7 @@ firstfile=allFileNames[0]
 #   atomsN=parser.getElementAtoms("N")
 #   allNitrogens.append(atomsN)
 sulphurs=[]
-
+distanceLimit=0.3
 parser=CIFParser(f"{folder}\{firstfile}")
 nitrogens=parser.getElementAtoms("N")
 sulphurs=parser.getElementAtoms("S")
@@ -19,7 +19,7 @@ distanceValues={}
 for n in nitrogens:
   for s in sulphurs:
     distance=n.getDistance(s)
-    if(distance<0.3):
+    if(distance<distanceLimit):
       distanceValues[(n,s)]=distance
 
 
