@@ -16,12 +16,11 @@ parser=CIFParser(f"{folder}\{firstfile}")
 nitrogens=parser.getElementAtoms("N")
 sulphurs=parser.getElementAtoms("S")
 distanceValues={}
-for n in nitrogens:
-  for s in sulphurs:
-    distance=n.getDistance(s)
-    if(distance<distanceLimit):
-      distanceValues[(n,s)]=distance
+# for n in nitrogens:
+#   for s in sulphurs:
+#     distance=n.getDistance(s)
+#     distanceValues[(n,s)]=distance
 
 
-for j in distanceValues:
-  print(distanceValues[j],j)
+# for j in distanceValues:
+#   print(distanceValues[j],j)

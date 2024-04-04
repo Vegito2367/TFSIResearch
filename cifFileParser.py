@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from atom import Atom
 import os
@@ -53,13 +54,24 @@ class CIFParser:
           val=val[:val.index("(")]
         self.cellvalues["cell_angle_gamma"]=(float(val))
     
-    for i in self.cellvalues:
-      print(f"{i} : {self.cellvalues[i]}")
     textofInterest=alllines[startIndex:alllines.index("#END")]
 
+    
+    astarnum=(np.cos(np.radians(self.cellvalues["cell_angle_beta"])) * np.cos(np.radians(self.cellvalues["cell_angle_gamma"]))) - np.cos(np.radians(self.cellvalues["cell_angle_alpha"]))
+    astardenom=np.cos(np.radians(self.cellvalues["cell_angle_beta"])) * np.sin(np.radians(self.cellvalues["cell_angle_gamma"]))
+    self.cellvalues["cell_astar"]=np.arccos(astarnum/astardenom)
+    ConversionMatrix=[
+      [self.cellvalues["cell_length_a"],self.cellvalues["cell_length_b"]*np.cos(np.radians(self.cellvalues["cell_angle_gamma"])),self.cellvalues["cell_length_c"]*np.cos(np.radians(self.cellvalues["cell_angle_beta"]) )],
+                      
+      [0,self.cellvalues["cell_length_b"]*np.sin(np.radians(self.cellvalues["cell_angle_gamma"])),-1 * self.cellvalues["cell_length_c"] * np.sin(np.radians(self.cellvalues["cell_angle_beta"])) * np.cos(np.radians(self.cellvalues["cell_astar"]))],
+
+      [0,0,self.cellvalues["cell_length_c"] * np.sin(np.radians(self.cellvalues["cell_angle_beta"])) * np.sin(np.radians(self.cellvalues["cell_astar"]))]
+      
+      ]
+    self.ConversionMatrix=np.array(ConversionMatrix)
     self.Atoms=[]
     for j in textofInterest:
-      self.Atoms.append(Atom(j.split(" ")))
+      self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix))
 
   def getElementAtoms(self,symbol):
     output=[]

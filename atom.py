@@ -1,5 +1,6 @@
+import numpy as np
 class Atom:
-  def __init__(self, inputList):
+  def __init__(self, inputList,conversionMatrix):
     elemname=inputList.pop(0)
     self.identifier=elemname
     ind1,ind2=0,0
@@ -24,13 +25,18 @@ class Atom:
 
 
     self.symbol=inputList.pop(0)
-    self.positionVector=[inputList.pop(0),inputList.pop(0),inputList.pop(0)]
+    positionVector=[inputList.pop(0),inputList.pop(0),inputList.pop(0)]
+
     for v in range(3):
-      elem=self.positionVector[v]
+      elem=positionVector[v]
       if ('(' in elem ):
-        self.positionVector[v]=float(elem[:elem.index("(")])
+        positionVector[v]=float(elem[:elem.index("(")])
       else:
-        self.positionVector[v]=float(elem)
+        positionVector[v]=float(elem)
+      
+    positionVector=np.array(positionVector)
+    self.positionVector=np.matmul(conversionMatrix,positionVector)
+    print(self.positionVector)
     self.remainingNumbers=inputList
   
   def __str__(self):
