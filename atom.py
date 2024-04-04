@@ -36,7 +36,6 @@ class Atom:
       
     positionVector=np.array(positionVector)
     self.positionVector=np.matmul(conversionMatrix,positionVector)
-    print(self.positionVector)
     self.remainingNumbers=inputList
   
   def __str__(self):
