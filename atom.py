@@ -49,29 +49,4 @@ class Atom:
     
     return round(output**0.5,6)
 
-    # if(len(elemname)>1 and str.isalpha(elemname[-1]) and str.isdigit(elemname[-2])):
-    #   self.atomLetter=elemname[-1]
-    #   ind1,ind2=0,0
-    #   for i in range(len(elemname)):
-    #     if(str.isdecimal(elemname[i])):
-    #       ind=i
-    #       break
-    #   for i in range(len(elemname)-1,-1,-1):
-    #     if(str.isdecimal(elemname[i])):
-    #       ind=i
-    #       break
-    #   self.element=elemname[0:ind]
-    #   self.atomNum=elemname[ind:-1]
-    # elif (str.isdigit(elemname[-1])):
-    #   ind=int(0)
-    #   for i in range(len(elemname)):
-    #     if(str.isdecimal(elemname[i])):
-    #       ind=i
-    #       break
-    #   self.atomLetter=""
-    #   self.atomNum=elemname[ind:]
-    #   self.element=elemname[0:ind]
-    # else:
-    #   self.element=elemname
-    #   self.atomNum=1
-    #   self.atomLetter=""
+  
