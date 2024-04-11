@@ -57,18 +57,21 @@ class CIFParser:
     textofInterest=alllines[startIndex:alllines.index("#END")]
 
     
-    astarnum=(np.cos(np.radians(self.cellvalues["cell_angle_beta"])) * np.cos(np.radians(self.cellvalues["cell_angle_gamma"]))) - np.cos(np.radians(self.cellvalues["cell_angle_alpha"]))
-    astardenom=np.cos(np.radians(self.cellvalues["cell_angle_beta"])) * np.sin(np.radians(self.cellvalues["cell_angle_gamma"]))
-    self.cellvalues["cell_astar"]=np.arccos(astarnum/astardenom)
-    ConversionMatrix=[
-      [self.cellvalues["cell_length_a"],self.cellvalues["cell_length_b"]*np.cos(np.radians(self.cellvalues["cell_angle_gamma"])),self.cellvalues["cell_length_c"]*np.cos(np.radians(self.cellvalues["cell_angle_beta"]) )],
-                      
-      [0,self.cellvalues["cell_length_b"]*np.sin(np.radians(self.cellvalues["cell_angle_gamma"])),-1 * self.cellvalues["cell_length_c"] * np.sin(np.radians(self.cellvalues["cell_angle_beta"])) * np.cos(np.radians(self.cellvalues["cell_astar"]))],
+    astarnum=self.alphaStarNumerator()
+    astardenom=self.alphaStarDenominator()
 
-      [0,0,self.cellvalues["cell_length_c"] * np.sin(np.radians(self.cellvalues["cell_angle_beta"])) * np.sin(np.radians(self.cellvalues["cell_astar"]))]
+    self.cellvalues["cell_astar"]=np.arccos(astarnum/astardenom)
+
+    ConversionMatrix=[
+      [self.a(),self.b() * self.cos(self.gamma()),self.c() * self.cos(self.beta())],
+                      
+      [0, self.b() * self.sin(self.gamma()), -1 * self.c() * self.sin(self.beta()) * self.cos(self.cellvalues["cell_astar"])],
+
+      [0,0,self.c() * self.sin(self.beta()) * self.sin(self.cellvalues["cell_astar"])]
       
-      ]
+    ]
     self.ConversionMatrix=np.array(ConversionMatrix)
+
     self.Atoms=[]
     for j in textofInterest:
       self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix))
@@ -80,3 +83,36 @@ class CIFParser:
         output.append(self.Atoms[j])
 
     return output
+  
+  def cos(self,x):
+    return np.cos(x)
+  
+  def sin(self,x):
+    return np.sin(x)
+  
+  
+  def alphaStarNumerator(self):
+    return (self.cos(self.beta()) * self.cos(self.gamma())) - self.cos(self.alpha())
+  
+  def alphaStarDenominator(self):
+    return self.sin(self.beta()) * self.sin(self.gamma())
+  
+
+  def b(self):
+    return self.cellvalues["cell_length_b"]
+  
+  def a(self):
+    return self.cellvalues["cell_length_a"]
+  
+  def c(self):
+    return self.cellvalues["cell_length_c"]
+  
+  def gamma(self):
+    return np.radians(self.cellvalues["cell_angle_gamma"])
+  
+  def beta(self):
+    return np.radians(self.cellvalues["cell_angle_beta"])
+  
+  def alpha(self):
+    return np.radians(self.cellvalues["cell_angle_alpha"])
+  

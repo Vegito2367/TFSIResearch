@@ -52,6 +52,6 @@ class Atom:
     for j in distanceVector:
       output+=j**2
     
-    return round(output**0.5,6)
+    return round(output**0.5,3)
 
   

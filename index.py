@@ -1,26 +1,33 @@
 from cifFileParser import CIFParser
 import os
 
+def main():
+  folder="cifstructures"
+  allFileNames=os.listdir(folder)
+  # firstfile=allFileNames[0]
+  lowerLimit=1.5
+  upperLimit=1.7
 
-folder="cifstructures"
-allFileNames=os.listdir(folder)
-nitrogens=[]
-firstfile=allFileNames[0]
-# for file in allFileNames:
-#   parser=CIFParser(f"{folder}\{file}")
-#   atomsN=parser.getElementAtoms("N")
-#   allNitrogens.append(atomsN)
-sulphurs=[]
-distanceLimit=0.3
-parser=CIFParser(f"{folder}\{firstfile}")
-nitrogens=parser.getElementAtoms("N")
-sulphurs=parser.getElementAtoms("S")
-distanceValues={}
-for n in nitrogens:
-  for s in sulphurs:
-    distance=n.getDistance(s)
-    distanceValues[(n,s)]=distance
+  for file in allFileNames:
+    sulphurs=[]
+    nitrogens=[]
+
+    parser=CIFParser(f"{folder}\{file}")
+    nitrogens=parser.getElementAtoms("N")
+    sulphurs=parser.getElementAtoms("S")
+    distanceValues={}
+    for n in nitrogens:
+      for s in sulphurs:
+        distance=n.getDistance(s)
+        if(distance>=lowerLimit and distance<=upperLimit):
+          distanceValues[(n,s)]=distance
+    print(f"S-N-S bonds for {file}")
+    for j in distanceValues:
+      print(distanceValues[j],j)
+    print("="*20)
 
 
-for j in distanceValues:
-  print(distanceValues[j],j)
+
+main()
+
+
