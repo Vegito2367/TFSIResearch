@@ -116,3 +116,6 @@ class CIFParser:
   def alpha(self):
     return np.radians(self.cellvalues["cell_angle_alpha"])
   
+
+
+  

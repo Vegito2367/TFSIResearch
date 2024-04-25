@@ -53,5 +53,17 @@ class Atom:
       output+=j**2
     
     return round(output**0.5,3)
+  
+  def __eq__(self, other):
+    for i in range(3):
+      if(self.positionVector[i]!=other.positionVector[i]):
+        return False
+    
+    return True
+  
+  def __hash__(self):
+    return hash(tuple(self.positionVector))
+  
+
 
   
