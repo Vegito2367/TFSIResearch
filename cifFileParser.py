@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from atom import Atom
@@ -11,7 +10,7 @@ class CIFParser:
       print(j)
 
   def __init__(self,filePath):
-
+    self.graphStructure={}
     myfile=open(filePath,'r')
     
     alllines=myfile.read().split("\n")
