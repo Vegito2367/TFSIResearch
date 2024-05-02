@@ -1,6 +1,7 @@
 from cifFileParser import CIFParser
 import os
 import numpy as np
+from graph import Graph
 
 def magnitude(vector):
   mag=0
@@ -25,7 +26,7 @@ def getAngle(left,center,right):
   return round(np.degrees(angle),6)
 
 def main():
-  folder="testcif"
+  folder="cifstructures"
   allFileNames=os.listdir(folder)
 
   lowerLimit=1.5
@@ -56,24 +57,23 @@ def main():
         occurences[j]+=1
       else:
         occurences[j]=1
-    left,center,right=None,None,None
-    for key in occurences.keys():
+
+    SNSBonds=[]
+    for key in occurences.keys():#Cycles over each atom in the occurence list
+      left,right,center=None,None,None
       if(occurences[key]==2):
           center=key
-      else:
-        if(left is None):
-          left=key
-        else:
-          right=key
-    
-    print(occurences)
-    print("=============Test==========")
-    print(getAngle([0,1,0],[0,0,0],[1,1,0]))
-    print("===============")
-    print("left", left.positionVector)
-    print("center", center.positionVector)
-    print("right", right.positionVector)
-    print(getAngle(left.positionVector,center.positionVector,right.positionVector))
+          bonds=list(distanceValues.keys())
+          for n,s in bonds:
+            if(n==center):
+              if(left is None):
+                left=s
+              elif(right is None):
+                right=s
+          SNSBonds.append(Graph([left,center,right]))
+
+
+    parser.printNicely(SNSBonds)
 
     print("="*20)
 

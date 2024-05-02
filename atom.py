@@ -39,8 +39,8 @@ class Atom:
     self.remainingNumbers=inputList
   
   def __str__(self):
-    atomletter="No letter" if self.atomLetter=="" else self.atomLetter
-    return f"Name: {self.element}, symbol: {self.symbol} position : {self.positionVector}, elemNum: {self.atomNum}, atom letter: {atomletter}\n"
+    
+    return self.identifier
   
   def __repr__(self):
     return self.identifier
