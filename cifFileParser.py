@@ -12,9 +12,13 @@ class CIFParser:
   def __init__(self,filePath):
     self.graphStructure={}
     myfile=open(filePath,'r')
-    
+    self.validFile=True
     alllines=myfile.read().split("\n")
-    startIndex=alllines.index("_atom_site_fract_z")+1
+    try:
+      startIndex=alllines.index("_atom_site_fract_z")+1
+    except:
+      self.validFile=False
+      return
     self.cellvalues={}
     for i in range(startIndex): #Retrieveing cell properties
       if("_cell_length_a" in alllines[i]):

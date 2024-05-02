@@ -2,6 +2,7 @@ from cifFileParser import CIFParser
 import os
 import numpy as np
 from graph import Graph
+from render import Render
 
 def magnitude(vector):
   mag=0
@@ -17,7 +18,6 @@ def getAngle(left,center,right):
     v1.append(left[i]-center[i])
     v2.append(right[i]-center[i])
 
-  print("=======")
   v1=np.array(v1)
   v2=np.array(v2)
   dot=np.dot(v1,v2)
@@ -26,17 +26,22 @@ def getAngle(left,center,right):
   return round(np.degrees(angle),6)
 
 def main():
-  folder="cifstructures"
+  folder="Tej"
   allFileNames=os.listdir(folder)
-
+  renderModule=Render()
   lowerLimit=1.5
   upperLimit=1.7
-
+  AnglePlotValues=[]
+  distanceplotValues=[]
+  invalidFiles=[]
   for file in allFileNames:
     sulphurs=[]
     nitrogens=[]
 
     parser=CIFParser(f"{folder}\{file}")
+    if(not parser.validFile):
+      invalidFiles.append(file)
+      continue
     nitrogens=parser.getElementAtoms("N")
     sulphurs=parser.getElementAtoms("S")
     distanceValues={}
@@ -70,12 +75,22 @@ def main():
                 left=s
               elif(right is None):
                 right=s
-          SNSBonds.append(Graph([left,center,right]))
-
+          angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
+          SNSBonds.append(Graph([left,center,right],angle))
 
     parser.printNicely(SNSBonds)
-
+    for bond in SNSBonds:
+      AnglePlotValues.append(bond.bondAngle)
+      for j in bond.structure:
+        if(j.symbol=="N"):
+          for k in bond.structure[j]:
+            distanceplotValues.append(k[1])
     print("="*20)
+  
+
+  renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance","Frequency")
+  renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle","Frequency")
+  print(f"Invalid Files: {invalidFiles}")
 
 
 
