@@ -39,7 +39,6 @@ class Atom:
     self.remainingNumbers=inputList
   
   def __str__(self):
-    
     return self.identifier
   
   def __repr__(self):

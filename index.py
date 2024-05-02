@@ -2,7 +2,7 @@ from cifFileParser import CIFParser
 import os
 import numpy as np
 from graph import Graph
-from render import Render
+from render import Render,ExportUnit
 
 def magnitude(vector):
   mag=0
@@ -34,6 +34,9 @@ def main():
   AnglePlotValues=[]
   distanceplotValues=[]
   invalidFiles=[]
+  ExportData=[]
+  maxProps=[0,"",""]
+  minProps=[100,"",""]
   for file in allFileNames:
     sulphurs=[]
     nitrogens=[]
@@ -49,7 +52,16 @@ def main():
       for s in sulphurs:
         distance=n.getDistance(s)
         if(distance>=lowerLimit and distance<=upperLimit):
+          if(distance>maxProps[0]):
+            maxProps[0]=distance
+            maxProps[1]=file
+            maxProps[2]=f"{n} -- {s}"
+          if(distance<minProps[0]):
+            minProps[0]=distance
+            minProps[1]=file
+            minProps[2]=f"{n} -- {s}"
           distanceValues[(n,s)]=distance
+
     print(f"S-N-S bonds for {file}")
     occurences={}
     for (i,j) in distanceValues:
@@ -76,7 +88,9 @@ def main():
               elif(right is None):
                 right=s
           angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
-          SNSBonds.append(Graph([left,center,right],angle))
+          g=Graph([left,center,right],angle)
+          SNSBonds.append(g)
+          ExportData.append(ExportUnit(file,angle,[center,left],distanceValues[(center,left)],[center,right],distanceValues[(center,right)]))
 
     parser.printNicely(SNSBonds)
     for bond in SNSBonds:
@@ -88,8 +102,9 @@ def main():
     print("="*20)
   
 
-  renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance","Frequency")
-  renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle","Frequency")
+  # renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
+  # renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
+  ExportUnit.Export(ExportData,maxProps,minProps)
   print(f"Invalid Files: {invalidFiles}")
 
 
