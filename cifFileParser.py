@@ -6,6 +6,7 @@ import os
 class CIFParser:
   @staticmethod
   def printNicely(myList):
+    output=""
     for j in myList:
       print(j)
 

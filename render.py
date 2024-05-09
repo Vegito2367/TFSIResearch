@@ -56,3 +56,11 @@ class Render:
     plt.ylabel(ylabel)
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.show()
+
+  def scatterPlot(self, xData, yData, title, xLabel, yLabel):
+    plt.scatter(xData, yData)
+    plt.title(title)
+    plt.xlabel(xLabel)
+    plt.ylabel(yLabel)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.show()

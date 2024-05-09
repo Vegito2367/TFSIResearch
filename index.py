@@ -32,6 +32,7 @@ def main():
   lowerLimit=1.5
   upperLimit=1.7
   AnglePlotValues=[]
+  distanceDiff=[]
   distanceplotValues=[]
   invalidFiles=[]
   ExportData=[]
@@ -52,14 +53,6 @@ def main():
       for s in sulphurs:
         distance=n.getDistance(s)
         if(distance>=lowerLimit and distance<=upperLimit):
-          if(distance>maxProps[0]):
-            maxProps[0]=distance
-            maxProps[1]=file
-            maxProps[2]=f"{n} -- {s}"
-          if(distance<minProps[0]):
-            minProps[0]=distance
-            minProps[1]=file
-            minProps[2]=f"{n} -- {s}"
           distanceValues[(n,s)]=distance
 
     print(f"S-N-S bonds for {file}")
@@ -90,22 +83,40 @@ def main():
           angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
           g=Graph([left,center,right],angle)
           SNSBonds.append(g)
-          ExportData.append(ExportUnit(file,angle,[center,left],distanceValues[(center,left)],[center,right],distanceValues[(center,right)]))
+          leftd=distanceValues[(center,left)]
+          rightd=distanceValues[(center,right)]
+          Extremes(maxProps,minProps,file,n.symbol,s.symbol,leftd)
+          Extremes(maxProps,minProps,file,n.symbol,s.symbol,rightd)
+          ExportData.append(ExportUnit(file,angle,[center,left],leftd,[center,right],rightd))
 
     parser.printNicely(SNSBonds)
     for bond in SNSBonds:
       AnglePlotValues.append(bond.bondAngle)
-      for j in bond.structure:
+      for j in bond.structure: #For each atom in the bond
+        temp=[]
         if(j.symbol=="N"):
           for k in bond.structure[j]:
             distanceplotValues.append(k[1])
+            temp.append(k[1])
+          distanceDiff.append(abs(temp[0]-temp[1]))
     print("="*20)
   
 
-  # renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
-  # renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
-  ExportUnit.Export(ExportData,maxProps,minProps)
+  renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
+  renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
+  renderModule.scatterPlot(AnglePlotValues,distanceDiff,"S-N-S Angle vs S-N-S Distance Diff ","Angle (deg)","Difference (10^-10 m)")
+  #ExportUnit.Export(ExportData,maxProps,minProps)
   print(f"Invalid Files: {invalidFiles}")
+
+def Extremes(maxProps, minProps, file, n, s, distance):
+    if(distance>maxProps[0]):
+      maxProps[0]=distance
+      maxProps[1]=file
+      maxProps[2]=f"{n} -- {s}"
+    if(distance<minProps[0]):
+      minProps[0]=distance
+      minProps[1]=file
+      minProps[2]=f"{n} -- {s}"
 
 
 
