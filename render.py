@@ -13,7 +13,7 @@ class ExportUnit:
   @staticmethod
   def Export(dataArray,maxProps,minProps):
     dataArray.sort(key=lambda x: x.angle) # Sort dataArray by angle
-    exportGrid=xl.Workbook("export.xlsx")
+    exportGrid=xl.Workbook("exportfullData.xlsx")
     exportSheet = exportGrid.add_worksheet("Angle_Sorted_Sheet")  # Define exportSheet variable
 
     row=1

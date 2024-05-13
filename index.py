@@ -26,7 +26,7 @@ def getAngle(left,center,right):
   return round(np.degrees(angle),6)
 
 def main():
-  folder="Tej"
+  folder="testcif"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   lowerLimit=1.5
@@ -39,74 +39,88 @@ def main():
   maxProps=[0,"",""]
   minProps=[100,"",""]
   for file in allFileNames:
-    sulphurs=[]
-    nitrogens=[]
+    try:
+      sulphurs=[]
+      nitrogens=[]
 
-    parser=CIFParser(f"{folder}\{file}")
-    if(not parser.validFile):
-      invalidFiles.append(file)
-      continue
-    nitrogens=parser.getElementAtoms("N")
-    sulphurs=parser.getElementAtoms("S")
-    distanceValues={}
-    for n in nitrogens:
-      for s in sulphurs:
-        distance=n.getDistance(s)
-        if(distance>=lowerLimit and distance<=upperLimit):
-          distanceValues[(n,s)]=distance
-
-    print(f"S-N-S bonds for {file}")
-    occurences={}
-    for (i,j) in distanceValues:
-      if(i in occurences.keys()):
-        occurences[i]+=1
-      else:
-        occurences[i]=1
+      parser=CIFParser(f"{folder}\{file}")
+      if(not parser.validFile):
+        invalidFiles.append([file,"Invalid Input"])
+        continue
+      nitrogens=parser.getElementAtoms("N")
+      sulphurs=parser.getElementAtoms("S")
       
-      if(j in occurences.keys()):
-        occurences[j]+=1
-      else:
-        occurences[j]=1
+      distanceValues={}
+      debugDistance={}
+      for n in nitrogens:
+        for s in sulphurs:
+          distance=n.getDistance(s)
+          debugDistance[(n,s)]=distance
+          if(distance>=lowerLimit and distance<=upperLimit):
+            distanceValues[(n,s)]=distance
+      
+      if(len(distanceValues)==0):
+        invalidFiles.append([file,"No S-N bonds found"])
+        continue
+      print(f"S-N-S bonds for {file}")
+      occurences={}
+      for (i,j) in distanceValues:
+        if(i in occurences.keys()):
+          occurences[i]+=1
+        else:
+          occurences[i]=1
+        
+        if(j in occurences.keys()):
+          occurences[j]+=1
+        else:
+          occurences[j]=1
+        
+      SNSBonds=[]
+      for key in occurences.keys():#Cycles over each nitrogen atom in the occurence list
+        left,right,center=None,None,None
+        if(occurences[key]==2 and key.symbol=="N"):
+            center=key
+            bonds=list(distanceValues.keys())
+            for n,s in bonds:
+              if(n==center):
+                if(left is None):
+                  left=s
+                elif(right is None):
+                  right=s
 
-    SNSBonds=[]
-    for key in occurences.keys():#Cycles over each atom in the occurence list
-      left,right,center=None,None,None
-      if(occurences[key]==2):
-          center=key
-          bonds=list(distanceValues.keys())
-          for n,s in bonds:
-            if(n==center):
-              if(left is None):
-                left=s
-              elif(right is None):
-                right=s
-          angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
-          g=Graph([left,center,right],angle)
-          SNSBonds.append(g)
-          leftd=distanceValues[(center,left)]
-          rightd=distanceValues[(center,right)]
-          Extremes(maxProps,minProps,file,n.symbol,s.symbol,leftd)
-          Extremes(maxProps,minProps,file,n.symbol,s.symbol,rightd)
-          ExportData.append(ExportUnit(file,angle,[center,left],leftd,[center,right],rightd))
+            angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
+            g=Graph([left,center,right],angle)
+            SNSBonds.append(g)
+            leftd=distanceValues[(center,left)]
+            rightd=distanceValues[(center,right)]
+            Extremes(maxProps,minProps,file,n.symbol,s.symbol,leftd)
+            Extremes(maxProps,minProps,file,n.symbol,s.symbol,rightd)
+            ExportData.append(ExportUnit(file,angle,[center,left],leftd,[center,right],rightd))
 
-    parser.printNicely(SNSBonds)
-    for bond in SNSBonds:
-      AnglePlotValues.append(bond.bondAngle)
-      for j in bond.structure: #For each atom in the bond
-        temp=[]
-        if(j.symbol=="N"):
-          for k in bond.structure[j]:
-            distanceplotValues.append(k[1])
-            temp.append(k[1])
-          distanceDiff.append(abs(temp[0]-temp[1]))
-    print("="*20)
+      parser.printNicely(SNSBonds)
+      for bond in SNSBonds:
+        AnglePlotValues.append(bond.bondAngle)
+        for j in bond.structure: #For each atom in the bond
+          temp=[]
+          if(j.symbol=="N"):
+            for k in bond.structure[j]:
+              distanceplotValues.append(k[1])
+              temp.append(k[1])
+            distanceDiff.append((temp[0]+temp[1])/2)
+      print("="*20)
+    except Exception as e:
+      print(distanceValues)
+      invalidFiles.append(file)
+      raise e
   
 
-  renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
-  renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
-  renderModule.scatterPlot(AnglePlotValues,distanceDiff,"S-N-S Angle vs S-N-S Distance Diff ","Angle (deg)","Difference (10^-10 m)")
+  # renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
+  # renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
+  # renderModule.scatterPlot(AnglePlotValues,distanceDiff,"S-N-S Angle vs S-N-S Distance Avg ","Angle (deg)","Difference (10^-10 m)")
   #ExportUnit.Export(ExportData,maxProps,minProps)
-  print(f"Invalid Files: {invalidFiles}")
+  print(f"Invalid Files:")
+  CIFParser.printNicely(invalidFiles)
+  print(len(invalidFiles))
 
 def Extremes(maxProps, minProps, file, n, s, distance):
     if(distance>maxProps[0]):
