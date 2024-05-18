@@ -3,7 +3,7 @@ import os
 import numpy as np
 from graph import Graph
 from render import Render,ExportUnit
-
+from heatmap import InteractivePlot
 def magnitude(vector):
   mag=0
   for i in vector:
@@ -26,7 +26,7 @@ def getAngle(left,center,right):
   return round(np.degrees(angle),6)
 
 def main():
-  folder="testcif"
+  folder="Tej2"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   lowerLimit=1.5
@@ -62,7 +62,7 @@ def main():
       if(len(distanceValues)==0):
         invalidFiles.append([file,"No S-N bonds found"])
         continue
-      print(f"S-N-S bonds for {file}")
+      # print(f"S-N-S bonds for {file}")
       occurences={}
       for (i,j) in distanceValues:
         if(i in occurences.keys()):
@@ -78,7 +78,7 @@ def main():
       SNSBonds=[]
       for key in occurences.keys():#Cycles over each nitrogen atom in the occurence list
         left,right,center=None,None,None
-        if(occurences[key]==2 and key.symbol=="N"):
+        if(occurences[key]>=2 and key.symbol=="N"):
             center=key
             bonds=list(distanceValues.keys())
             for n,s in bonds:
@@ -97,7 +97,7 @@ def main():
             Extremes(maxProps,minProps,file,n.symbol,s.symbol,rightd)
             ExportData.append(ExportUnit(file,angle,[center,left],leftd,[center,right],rightd))
 
-      parser.printNicely(SNSBonds)
+
       for bond in SNSBonds:
         AnglePlotValues.append(bond.bondAngle)
         for j in bond.structure: #For each atom in the bond
@@ -107,7 +107,6 @@ def main():
               distanceplotValues.append(k[1])
               temp.append(k[1])
             distanceDiff.append((temp[0]+temp[1])/2)
-      print("="*20)
     except Exception as e:
       print(distanceValues)
       invalidFiles.append(file)
@@ -117,6 +116,19 @@ def main():
   # renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
   # renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
   # renderModule.scatterPlot(AnglePlotValues,distanceDiff,"S-N-S Angle vs S-N-S Distance Avg ","Angle (deg)","Difference (10^-10 m)")
+  # x,y,names=[],[],[]
+  # for unit in ExportData:
+  #     x.append(unit.angle)
+  #     y.append((unit.distance1+unit.distance2)/2)
+  #     names.append(unit.file)
+
+  x1,names1=[],[]
+  for unit in ExportData:
+    x1.append(unit.angle)
+    names1.append(unit.file)
+  
+  #InteractivePlot.plotInteractivePlot(x,y,names,"Angle (deg)","Average Distance(10^-10 m)","S-N-S Angle vs S-N-S Distance Avg")
+  InteractivePlot.InteractiveHistogram(x1,names1,"Angle (deg)","S-N-S Angle Frequency")
   #ExportUnit.Export(ExportData,maxProps,minProps)
   print(f"Invalid Files:")
   CIFParser.printNicely(invalidFiles)
