@@ -38,7 +38,10 @@ def main():
   ExportData=[]
   maxProps=[0,"",""]
   minProps=[100,"",""]
+  progress=0
+  
   for file in allFileNames:
+    print(f"Progress: {progress}/{len(allFileNames)}")
     try:
       sulphurs=[]
       nitrogens=[]
@@ -111,24 +114,25 @@ def main():
       print(distanceValues)
       invalidFiles.append(file)
       raise e
+    progress+=1
   
 
   # renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
   # renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
   # renderModule.scatterPlot(AnglePlotValues,distanceDiff,"S-N-S Angle vs S-N-S Distance Avg ","Angle (deg)","Difference (10^-10 m)")
-  # x,y,names=[],[],[]
-  # for unit in ExportData:
-  #     x.append(unit.angle)
-  #     y.append((unit.distance1+unit.distance2)/2)
-  #     names.append(unit.file)
-
-  x1,names1=[],[]
+  x,y,names=[],[],[]
   for unit in ExportData:
-    x1.append(unit.angle)
-    names1.append(unit.file)
+      x.append(unit.angle)
+      y.append((unit.distance1+unit.distance2)/2)
+      names.append([unit.file,unit.bond1,unit.bond2])
+
+  # x1,names1=[],[]
+  # for unit in ExportData:
+  #   x1.append(unit.angle)
+  #   names1.append(unit.file)
   
-  #InteractivePlot.plotInteractivePlot(x,y,names,"Angle (deg)","Average Distance(10^-10 m)","S-N-S Angle vs S-N-S Distance Avg")
-  InteractivePlot.InteractiveHistogram(x1,names1,"Angle (deg)","S-N-S Angle Frequency")
+  InteractivePlot.plotInteractivePlot(x,y,names,"Angle (deg)","Average Distance(10^-10 m)","S-N-S Angle vs S-N-S Distance Avg")
+  #InteractivePlot.InteractiveHistogram(x1,names1,"Angle (deg)","S-N-S Angle Frequency")
   #ExportUnit.Export(ExportData,maxProps,minProps)
   print(f"Invalid Files:")
   CIFParser.printNicely(invalidFiles)

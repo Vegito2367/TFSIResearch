@@ -24,6 +24,9 @@ class InteractivePlot:
                   xaxis_title=xlabel,
                   yaxis_title=ylabel)
     fig.show()
+    file = open(f"{title}.html","w")
+    fig.write_html(f"{title}.html")
+    file.close()
 
 
   def InteractiveHistogram(x,pointData, xlabel,title):
@@ -37,4 +40,5 @@ class InteractivePlot:
     fig.update_layout(title=title,
                   xaxis_title=xlabel,
                   yaxis_title="Frequency")
+    fig.write_html("exportfile.html")
     fig.show()
