@@ -28,14 +28,14 @@ def getAngle(left,center,right):
 
 ######################################################SNSManipulation
 
-def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles):
+def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,ExportData):
       sulphurs=[]
       nitrogens=[]
 
       nitrogens=parser.getElementAtoms("N")
       sulphurs=parser.getElementAtoms("S")
       
-      distanceValues={}
+      
       for n in nitrogens:
         for s in sulphurs:
           distance=n.getDistance(s)
@@ -74,12 +74,18 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles):
 
             angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
             g=Graph([left,center,right],angle)
-            
-      return g,distanceValues
+            #Separate the Export stuff from the SNS Bonds Identification
+            leftd=distanceValues[(g.center,g.left)]
+            rightd=distanceValues[(g.center,g.right)]
+            # Extremes(maxProps,minProps,parser.fileName,g.center.symbol,g.left.symbol,leftd)
+            # Extremes(maxProps,minProps,parser.fileName,g.center.symbol,g.left.symbol,rightd)
+            ExportData.append(ExportUnit(parser.fileName,g.bondAngle,[center,left],leftd,[center,right],rightd))
+            SNSBonds.append(g)
+      return SNSBonds
 
 
 def SNSManipulation():
-  folder="cifstructures"
+  folder="Tej2"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   lowerLimit=1.5
@@ -96,20 +102,15 @@ def SNSManipulation():
   for file in allFileNames:
     print(f"Progress: {progress}/{len(allFileNames)}")
     try:
+        SNSBonds=[]
         parser=CIFParser(f"{folder}\{file}")
         if(not parser.validFile):
           invalidFiles.append([file,"Invalid Input"])
           continue
-
-        g,distanceValues=IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles)
+        distanceValues={}
+        SNSBonds=IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,ExportData)
         
-        leftd=distanceValues[(g.center,g.left)]
-        rightd=distanceValues[(g.center,g.right)]
-        Extremes(maxProps,minProps,file,g.center.symbol,g.left.symbol,leftd)
-        Extremes(maxProps,minProps,file,g.center.symbol,g.left.symbol,rightd)
-        ExportData.append(ExportUnit(file,g.bondAngle,[center,left],leftd,[center,right],rightd))
-
-
+        
         for bond in SNSBonds:
           AnglePlotValues.append(bond.bondAngle)
           for j in bond.structure: #For each atom in the bond
@@ -158,13 +159,52 @@ def Extremes(maxProps, minProps, file, n, s, distance):
       minProps[1]=file
       minProps[2]=f"{n} -- {s}"
 ######################################################End of SNSManipulation/Start of Torison Angle
-def 
-
-
-
+def TorisonAngle():
+  folder="testcif"
+  allFileNames=os.listdir(folder)
+  renderModule=Render()
+  AnglePlotValues=[]
+  invalidFiles=[]
+  progress=0
+  ExportDataTorsion=[]
+  for file in allFileNames:
+    print(f"Progress: {progress}/{len(allFileNames)}")
+    try:
+        parser=CIFParser(f"{folder}\{file}")
+        if(not parser.validFile):
+          invalidFiles.append([file,"Invalid Input"])
+          progress+=1
+          continue
+        distanceValues={}
+        SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues,ExportDataTorsion)
+        for bond in SNSBonds:
+          carbons = parser.getElementAtoms("C")
+          cDistLeft,cDistRight=100,100
+          cLeft,cRight=None,None
+          for c in carbons:
+            distL=bond.left.getDistance(c)
+            distR=bond.right.getDistance(c)
+            if(distL<cDistLeft):
+              cDistLeft=distL
+              cLeft=c
+            if(distR<cDistRight):
+              cDistRight=distR
+              cRight=c
+          if(cLeft is not None and cRight is not None):
+            bond.addBond(bond.left,cLeft,cDistLeft)
+            bond.addBond(bond.right,cRight,cDistRight)
+            print(bond)
+          print("=====================================")
+    except Exception as e:
+      invalidFiles.append(file)
+      print(file)
+      raise e
+    progress+=1
+        
+        
+######################################################End of Torison Angle/Start of Main
 def main():
-
-  #SNSManipulation()
+  TorisonAngle()
 main()
 
 

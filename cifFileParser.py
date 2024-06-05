@@ -11,9 +11,9 @@ class CIFParser:
       print(j)
 
   def __init__(self,filePath):
-    self.fileName=filePath[filePath.index("/")+1:]
     self.graphStructure={}
     myfile=open(filePath,'r')
+    self.fileName=myfile.name
     self.validFile=True
     alllines=myfile.read().split("\n")
     try:
