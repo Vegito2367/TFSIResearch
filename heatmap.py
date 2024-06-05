@@ -13,13 +13,13 @@ class InteractivePlot:
   #####################
 
     df = pd.DataFrame({
-    'Angle': x,
-    'Distance': y,
-    'Compound': pointData
+    xlabel: x,
+    ylabel: y,
+    "Data": pointData
     })
 
 
-    fig = px.scatter(df, x='Angle', y='Distance', color='Angle', hover_data=['Compound'])
+    fig = px.scatter(df, x=xlabel, y=ylabel, color=xlabel, hover_data=['Data'])
     fig.update_layout(title=title,
                   xaxis_title=xlabel,
                   yaxis_title=ylabel)

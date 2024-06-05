@@ -95,7 +95,7 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,E
 
 
 def SNSManipulation():
-  folder="Tej2"
+  folder="cifstructures"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   lowerLimit=1.5
@@ -170,14 +170,18 @@ def Extremes(maxProps, minProps, file, n, s, distance):
       minProps[2]=f"{n} -- {s}"
 ######################################################End of SNSManipulation/Start of Torison Angle
 def TorisonAngle():
-  folder="testcif"
+  folder="TFSI_NoDisorder"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   AnglePlotValues=[]
   invalidFiles=[]
   progress=0
   ExportDataTorsion=[]
+  TorisonAngleAverages=[]
+  names=[]
+  bondlengthDeltas=[]
   for file in allFileNames:
+    
     print(f"Progress: {progress}/{len(allFileNames)}")
     try:
         parser=CIFParser(f"{folder}\{file}")
@@ -188,6 +192,11 @@ def TorisonAngle():
         distanceValues={}
         SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues,ExportDataTorsion)
         for bond in SNSBonds:
+          temp=[]
+          for s,dist in bond.structure[bond.center]:
+            temp.append(dist)
+          bondlengthDeltas.append((temp[0]+temp[1])/2)
+          AnglePlotValues.append(bond.bondAngle)
           carbons = parser.getElementAtoms("C")
           cDistLeft,cDistRight=100,100
           cLeft,cRight=None,None
@@ -203,19 +212,25 @@ def TorisonAngle():
           if(cLeft is not None and cRight is not None):
             bond.addBond(bond.left,cLeft,cDistLeft)
             bond.addBond(bond.right,cRight,cDistRight)
-            print(bond)
-          print("=====================================")
+            
+          
           #Right Torsion Angle
           A1,B1,C1,D1 = bond.left,bond.center,bond.right,cRight
           TorisonAngleRight=getTorsionAngle(A1,B1,C1,D1)
           TorisonAngleLeft=getTorsionAngle(C1,B1,A1,cLeft)
-          print(f"Right Torsion Angle: {TorisonAngleRight}")
-          print(f"Left Torsion Angle: {TorisonAngleLeft}")
+          
+          TorisonAngleAverages.append((TorisonAngleRight+TorisonAngleLeft)/2)
+          names.append(f"{file} {cLeft} {bond.left} {bond.center} {bond.right} {cRight}")
+  
     except Exception as e:
       invalidFiles.append(file)
       print(file)
       raise e
+    
     progress+=1
+  # InteractivePlot.plotInteractivePlot(AnglePlotValues,TorisonAngleAverages,names,"S-N-S Angle","Torsion Angle","S-N-S Angle vs Torsion Angle")
+  # InteractivePlot.plotInteractivePlot(TorisonAngleAverages, bondlengthDeltas,names,"Torsion Angle","S-N Bond Length Delta","S-N Bond Length Delta vs Torsion Angle")
+  InteractivePlot.plotInteractivePlot(TorisonAngleAverages, bondlengthDeltas,names,"Torsion Angle","S-N Bond Length Average","S-N Bond Length Average vs Torsion Angle")
         
         
 ######################################################End of Torison Angle/Start of Main
