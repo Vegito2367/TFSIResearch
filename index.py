@@ -26,6 +26,16 @@ def getAngle(left,center,right):
   angle=np.arccos(cosTheta)
   return round(np.degrees(angle),6)
 
+def getNormalVector(x,y,z):
+  pass
+def getTorsionAngle(A,B,C,D):
+  #BC is the common edge
+  #ABC is first plane and BCD is the second plane
+  normABC=np.cross(A.positionVector-B.positionVector,C.positionVector-B.positionVector)
+  normBCD=np.cross(B.positionVector-C.positionVector,D.positionVector-C.positionVector)
+  return np.degrees(np.arccos(np.dot(normABC,normBCD)/(magnitude(normABC)*magnitude(normBCD))))
+
+
 ######################################################SNSManipulation
 
 def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,ExportData):
@@ -195,6 +205,12 @@ def TorisonAngle():
             bond.addBond(bond.right,cRight,cDistRight)
             print(bond)
           print("=====================================")
+          #Right Torsion Angle
+          A1,B1,C1,D1 = bond.left,bond.center,bond.right,cRight
+          TorisonAngleRight=getTorsionAngle(A1,B1,C1,D1)
+          TorisonAngleLeft=getTorsionAngle(C1,B1,A1,cLeft)
+          print(f"Right Torsion Angle: {TorisonAngleRight}")
+          print(f"Left Torsion Angle: {TorisonAngleLeft}")
     except Exception as e:
       invalidFiles.append(file)
       print(file)
