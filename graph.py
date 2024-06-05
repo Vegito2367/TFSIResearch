@@ -1,5 +1,8 @@
 class Graph:
   def __init__(self,atomList,angle):
+    self.left=self.atomList[0]
+    self.center=self.atomList[1]
+    self.right=self.atomList[2]
     self.bondAngle=angle
     self.structure={}
     for atom in atomList:

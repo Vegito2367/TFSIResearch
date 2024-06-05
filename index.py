@@ -4,6 +4,7 @@ import numpy as np
 from graph import Graph
 from render import Render,ExportUnit
 from heatmap import InteractivePlot
+
 def magnitude(vector):
   mag=0
   for i in vector:
@@ -25,46 +26,26 @@ def getAngle(left,center,right):
   angle=np.arccos(cosTheta)
   return round(np.degrees(angle),6)
 
-def main():
-  folder="Tej2"
-  allFileNames=os.listdir(folder)
-  renderModule=Render()
-  lowerLimit=1.5
-  upperLimit=1.7
-  AnglePlotValues=[]
-  distanceDiff=[]
-  distanceplotValues=[]
-  invalidFiles=[]
-  ExportData=[]
-  maxProps=[0,"",""]
-  minProps=[100,"",""]
-  progress=0
-  
-  for file in allFileNames:
-    print(f"Progress: {progress}/{len(allFileNames)}")
-    try:
+######################################################SNSManipulation
+
+def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles):
       sulphurs=[]
       nitrogens=[]
 
-      parser=CIFParser(f"{folder}\{file}")
-      if(not parser.validFile):
-        invalidFiles.append([file,"Invalid Input"])
-        continue
       nitrogens=parser.getElementAtoms("N")
       sulphurs=parser.getElementAtoms("S")
       
       distanceValues={}
-      debugDistance={}
       for n in nitrogens:
         for s in sulphurs:
           distance=n.getDistance(s)
-          debugDistance[(n,s)]=distance
+
           if(distance>=lowerLimit and distance<=upperLimit):
             distanceValues[(n,s)]=distance
       
       if(len(distanceValues)==0):
-        invalidFiles.append([file,"No S-N bonds found"])
-        continue
+        invalidFiles.append([parser.fileName,"No S-N bonds found"])
+        
       # print(f"S-N-S bonds for {file}")
       occurences={}
       for (i,j) in distanceValues:
@@ -93,23 +74,52 @@ def main():
 
             angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
             g=Graph([left,center,right],angle)
-            SNSBonds.append(g)
-            leftd=distanceValues[(center,left)]
-            rightd=distanceValues[(center,right)]
-            Extremes(maxProps,minProps,file,n.symbol,s.symbol,leftd)
-            Extremes(maxProps,minProps,file,n.symbol,s.symbol,rightd)
-            ExportData.append(ExportUnit(file,angle,[center,left],leftd,[center,right],rightd))
+            
+      return g,distanceValues
 
 
-      for bond in SNSBonds:
-        AnglePlotValues.append(bond.bondAngle)
-        for j in bond.structure: #For each atom in the bond
-          temp=[]
-          if(j.symbol=="N"):
-            for k in bond.structure[j]:
-              distanceplotValues.append(k[1])
-              temp.append(k[1])
-            distanceDiff.append((temp[0]+temp[1])/2)
+def SNSManipulation():
+  folder="cifstructures"
+  allFileNames=os.listdir(folder)
+  renderModule=Render()
+  lowerLimit=1.5
+  upperLimit=1.7
+  AnglePlotValues=[]
+  distanceDiff=[]
+  distanceplotValues=[]
+  invalidFiles=[]
+  ExportData=[]
+  maxProps=[0,"",""]
+  minProps=[100,"",""]
+  progress=0
+  
+  for file in allFileNames:
+    print(f"Progress: {progress}/{len(allFileNames)}")
+    try:
+        parser=CIFParser(f"{folder}\{file}")
+        if(not parser.validFile):
+          invalidFiles.append([file,"Invalid Input"])
+          continue
+
+        g,distanceValues=IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles)
+        
+        leftd=distanceValues[(g.center,g.left)]
+        rightd=distanceValues[(g.center,g.right)]
+        Extremes(maxProps,minProps,file,g.center.symbol,g.left.symbol,leftd)
+        Extremes(maxProps,minProps,file,g.center.symbol,g.left.symbol,rightd)
+        ExportData.append(ExportUnit(file,g.bondAngle,[center,left],leftd,[center,right],rightd))
+
+
+        for bond in SNSBonds:
+          AnglePlotValues.append(bond.bondAngle)
+          for j in bond.structure: #For each atom in the bond
+            temp=[]
+            if(j.symbol=="N"):
+              for k in bond.structure[j]:
+                distanceplotValues.append(k[1])
+                temp.append(k[1])
+              distanceDiff.append((temp[0]+temp[1])/2)
+
     except Exception as e:
       print(distanceValues)
       invalidFiles.append(file)
@@ -131,7 +141,7 @@ def main():
   #   x1.append(unit.angle)
   #   names1.append(unit.file)
   
-  InteractivePlot.plotInteractivePlot(x,y,names,"Angle (deg)","Average Distance(10^-10 m)","S-N-S Angle vs S-N-S Distance Avg")
+  InteractivePlot.plotInteractivePlot(x,y,names,"Angle (deg)","Average Distance(10^-10 m)",f"S-N-S Angle vs S-N-S Distance Avg for {folder}")
   #InteractivePlot.InteractiveHistogram(x1,names1,"Angle (deg)","S-N-S Angle Frequency")
   #ExportUnit.Export(ExportData,maxProps,minProps)
   print(f"Invalid Files:")
@@ -147,9 +157,14 @@ def Extremes(maxProps, minProps, file, n, s, distance):
       minProps[0]=distance
       minProps[1]=file
       minProps[2]=f"{n} -- {s}"
+######################################################End of SNSManipulation/Start of Torison Angle
+def 
 
 
 
+def main():
+
+  #SNSManipulation()
 main()
 
 
