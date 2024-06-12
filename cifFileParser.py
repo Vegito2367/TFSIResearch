@@ -97,6 +97,12 @@ class CIFParser:
         output.append([atom,dist])
     return output
   
+  def getParticularAtom(self,identifier):
+    for atom in self.Atoms:
+      if(atom.identifier==identifier):
+        return atom
+    return "Atom Not Found"
+  
   def cos(self,x):
     return np.cos(x)
   

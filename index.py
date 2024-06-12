@@ -244,7 +244,14 @@ def TorisonAngle():
         
 ######################################################End of Torison Angle/Start of Main
 def main():
-  TorisonAngle()
+  folder="TestFolder"
+  allFileNames=os.listdir(folder)
+  for file in allFileNames:
+    parser=CIFParser(f"{folder}\{file}")
+    nits=parser.getElementAtoms("N")
+    atomDistances=parser.getAtomsInARadius(nits[0],1.7)
+    parser.printNicely(atomDistances)
+    print("\n\n")
 main()
 
 
