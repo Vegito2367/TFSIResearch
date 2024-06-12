@@ -89,6 +89,14 @@ class CIFParser:
 
     return output
   
+  def getAtomsInARadius(self,targetAtom,radius):
+    output=[]
+    for atom in self.Atoms:
+      dist=atom.getDistance(targetAtom)
+      if(dist<=radius):
+        output.append([atom,dist])
+    return output
+  
   def cos(self,x):
     return np.cos(x)
   

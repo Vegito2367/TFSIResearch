@@ -38,7 +38,7 @@ def getTorsionAngle(A,B,C,D):
 
 ######################################################SNSManipulation
 
-def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,ExportData):
+def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
       sulphurs=[]
       nitrogens=[]
 
@@ -89,7 +89,7 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,E
             rightd=distanceValues[(g.center,g.right)]
             # Extremes(maxProps,minProps,parser.fileName,g.center.symbol,g.left.symbol,leftd)
             # Extremes(maxProps,minProps,parser.fileName,g.center.symbol,g.left.symbol,rightd)
-            ExportData.append(ExportUnit(parser.fileName,g.bondAngle,[center,left],leftd,[center,right],rightd))
+            # ExportData.append(ExportUnit(parser.fileName,g.bondAngle,[center,left],leftd,[center,right],rightd))
             SNSBonds.append(g)
       return SNSBonds
 
@@ -180,6 +180,10 @@ def TorisonAngle():
   TorisonAngleAverages=[]
   names=[]
   bondlengthDeltas=[]
+  bondlengthAverage=[]
+  torsionDeltas=[]
+
+
   for file in allFileNames:
     
     print(f"Progress: {progress}/{len(allFileNames)}")
@@ -190,12 +194,13 @@ def TorisonAngle():
           progress+=1
           continue
         distanceValues={}
-        SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues,ExportDataTorsion)
+        SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues)
         for bond in SNSBonds:
           temp=[]
           for s,dist in bond.structure[bond.center]:
             temp.append(dist)
-          bondlengthDeltas.append((temp[0]+temp[1])/2)
+          bondlengthAverage.append((temp[0]+temp[1])/2)
+          bondlengthDeltas.append(abs(temp[0]-temp[1]))
           AnglePlotValues.append(bond.bondAngle)
           carbons = parser.getElementAtoms("C")
           cDistLeft,cDistRight=100,100
@@ -220,7 +225,9 @@ def TorisonAngle():
           TorisonAngleLeft=getTorsionAngle(C1,B1,A1,cLeft)
           
           TorisonAngleAverages.append((TorisonAngleRight+TorisonAngleLeft)/2)
-          names.append(f"{file} {cLeft} {bond.left} {bond.center} {bond.right} {cRight}")
+          torsionDeltas.append(abs(TorisonAngleRight-TorisonAngleLeft))
+          names.append(f"{file} {cLeft} {bond.left} {bond.center} {bond.right} {cRight}\n||{TorisonAngleRight} {A1} {B1} {C1} {D1} || {TorisonAngleLeft} {C1} {B1} {A1} {cLeft}")
+          ExportDataTorsion.append(ExportUnit(file,bond.bondAngle,[A1,B1,C1,D1],TorisonAngleRight,[C1,B1,A1,cLeft],TorisonAngleLeft))
   
     except Exception as e:
       invalidFiles.append(file)
@@ -228,9 +235,11 @@ def TorisonAngle():
       raise e
     
     progress+=1
-  # InteractivePlot.plotInteractivePlot(AnglePlotValues,TorisonAngleAverages,names,"S-N-S Angle","Torsion Angle","S-N-S Angle vs Torsion Angle")
+  # InteractivePlot.plotInteractivePlot(bondlengthDeltas,torsionDeltas,names,"Bond Deltas","Torsion Angle Deltas","S-N Bond Delta vs Torsion Angle Delta")
   # InteractivePlot.plotInteractivePlot(TorisonAngleAverages, bondlengthDeltas,names,"Torsion Angle","S-N Bond Length Delta","S-N Bond Length Delta vs Torsion Angle")
-  InteractivePlot.plotInteractivePlot(TorisonAngleAverages, bondlengthDeltas,names,"Torsion Angle","S-N Bond Length Average","S-N Bond Length Average vs Torsion Angle")
+  # InteractivePlot.plotInteractivePlot(bondlengthAverage,TorisonAngleAverages,names,"S-N Bond Length Average","Torsion Angle","S-N Bond Length Average vs Torsion Angle")
+  InteractivePlot.plotInteractivePlot(AnglePlotValues,TorisonAngleAverages,names,"S-N-S Angle","Torsion Angle Average",f"S-N-S Angle vs Torsion Angle Average for {folder}")
+  ExportUnit.ExportSingeProp_DoubleProp(ExportDataTorsion,"SNS_Angle","Torsion Angle",folder)
         
         
 ######################################################End of Torison Angle/Start of Main

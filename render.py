@@ -2,49 +2,41 @@ import matplotlib.pyplot as plt
 import xlsxwriter as xl
 
 class ExportUnit:
-  def __init__(self,file,angle,bond1,distance1,bond2,distance2):
+  def __init__(self,file,singleProperty,atoms1,doublePropery1,atoms2,doubleProperty2):
     self.file=file
-    self.angle=angle
-    self.bond1=f"{bond1[0]} -- {bond1[1]}"
-    self.bond2=f"{bond2[0]} -- {bond2[1]}"
-    self.distance1=distance1
-    self.distance2=distance2
+    self.singleProperty=singleProperty
+    self.atoms1=""
+    for j in atoms1:
+      self.atoms1+=f" {j} --"
+    self.atoms2=""
+    for j in atoms2:
+      self.atoms2+=f" {j} --"
+    self.doubleProperty1=doublePropery1
+    self.doubleProperty2 = doubleProperty2
   
   @staticmethod
-  def Export(dataArray,maxProps,minProps):
-    dataArray.sort(key=lambda x: x.angle) # Sort dataArray by angle
+  def ExportSingeProp_DoubleProp(dataArray, singlePropName,doublePropName, title):
+    dataArray.sort(key=lambda x: x.singleProperty) # Sort dataArray by angle
     exportGrid=xl.Workbook("exportfullData.xlsx")
-    exportSheet = exportGrid.add_worksheet("Angle_Sorted_Sheet")  # Define exportSheet variable
+    exportSheet = exportGrid.add_worksheet(title)  # Define exportSheet variable
 
     row=1
     exportSheet.write(0,0,"File")
-    exportSheet.write(0,1,"Angle")
-    exportSheet.write(0,2,"S-N Distance1")
-    exportSheet.write(0,3,"S-N Distance2")
+    exportSheet.write(0,1,singlePropName)
+    exportSheet.write(0,2,f"{doublePropName}1")
+    exportSheet.write(0,3,f"{doublePropName}2")
 
     for data in dataArray:
       exportSheet.write(row,0,data.file)
-      exportSheet.write(row,1,data.angle)
-      exportSheet.write(row,2,data.bond1)
-      exportSheet.write(row+1,2,data.distance1)
-      exportSheet.write(row,3,data.bond2)
-      exportSheet.write(row+1,3,data.distance2)
+      exportSheet.write(row,1,data.singleProperty)
+      exportSheet.write(row,2,data.atoms1)
+      exportSheet.write(row+1,2,data.doubleProperty1)
+      exportSheet.write(row,3,data.atoms2)
+      exportSheet.write(row+1,3,data.doubleProperty2)
       row+=3
-    exportSheet.write(row+1,0,"Max Distance")
-    exportSheet.write(row+1,1,maxProps[0])
-    exportSheet.write(row+2,0,"File")
-    exportSheet.write(row+2,1,maxProps[1])
-    exportSheet.write(row+3,0,"Atoms")
-    exportSheet.write(row+3,1,maxProps[2])
-    exportSheet.write(row+4,0,"Min Distance")
-    exportSheet.write(row+4,1,minProps[0])
-    exportSheet.write(row+5,0,"File")
-    exportSheet.write(row+5,1,minProps[1])
-    exportSheet.write(row+6,0,"Atoms")
-    exportSheet.write(row+6,1,minProps[2])
-
     exportGrid.close()  # Close exportGrid workbook
 
+  
 class Render:
   def __init__(self):
     pass

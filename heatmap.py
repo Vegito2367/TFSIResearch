@@ -24,10 +24,14 @@ class InteractivePlot:
                   xaxis_title=xlabel,
                   yaxis_title=ylabel)
     fig.show()
+    
     file = open(f"{title}.html","w")
     fig.write_html(f"{title}.html")
     file.close()
 
+
+  def update_point(trace, points, selector,scatter):
+      print("Hello")
 
   def InteractiveHistogram(x,pointData, xlabel,title):
     df = pd.DataFrame({
