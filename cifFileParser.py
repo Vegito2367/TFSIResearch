@@ -11,7 +11,15 @@ class CIFParser:
       print(j)
 
   def __init__(self,filePath):
-    self.graphStructure={}
+    
+    self.covalentRadii={
+      "Co":1.5,
+      "N":0.7,
+      "Au":1.36,
+      "Fe":1.52,
+      "Mn":1.61,
+      "S":1.11
+    }
     myfile=open(filePath,'r')
     self.fileName=myfile.name
     self.validFile=True
@@ -79,7 +87,7 @@ class CIFParser:
 
     self.Atoms=[]
     for j in textofInterest:
-      self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix))
+      self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix,self.covalentRadii))
 
   def getElementAtoms(self,symbol):
     output=[]
@@ -89,6 +97,9 @@ class CIFParser:
 
     return output
   
+  def containsAtom(self,symbol):
+    atoms=self.getElementAtoms(symbol)
+    return len(atoms)>0
   def getAtomsInARadius(self,targetAtom,radius):
     output=[]
     for atom in self.Atoms:

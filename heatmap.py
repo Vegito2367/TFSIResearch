@@ -30,6 +30,35 @@ class InteractivePlot:
     file.close()
 
 
+  def plotInteractivePlotColorArray(x,y,pointData,colorArray, xlabel,ylabel,title, makeFile):
+    
+  ########################Angle vs Average Distance
+    
+  #####################
+
+    df = pd.DataFrame({
+    xlabel: x,
+    ylabel: y,
+    "Data": pointData,
+    "colorArray": colorArray
+    })
+
+
+    fig = px.scatter(df, x=xlabel, y=ylabel,color="colorArray", color_discrete_map={
+      0:"red",
+      1:"blue"
+    }, symbol="colorArray", hover_data=['Data'])
+    fig.update_layout(title=title,
+                  xaxis_title=xlabel,
+                  yaxis_title=ylabel)
+    fig.show()
+    
+    if(makeFile):
+      file = open(f"{title}.html","w")
+      fig.write_html(f"{title}.html")
+      file.close()
+
+
   def update_point(trace, points, selector,scatter):
       print("Hello")
 

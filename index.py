@@ -38,7 +38,7 @@ def getTorsionAngle(A,B,C,D):
 
 ######################################################SNSManipulation
 
-def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
+def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues,ExportData):
       sulphurs=[]
       nitrogens=[]
 
@@ -89,26 +89,29 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
             rightd=distanceValues[(g.center,g.right)]
             # Extremes(maxProps,minProps,parser.fileName,g.center.symbol,g.left.symbol,leftd)
             # Extremes(maxProps,minProps,parser.fileName,g.center.symbol,g.left.symbol,rightd)
-            # ExportData.append(ExportUnit(parser.fileName,g.bondAngle,[center,left],leftd,[center,right],rightd))
+            ExportData.append(ExportUnit(parser.fileName,g.bondAngle,[center,left],leftd,[center,right],rightd))
             SNSBonds.append(g)
       return SNSBonds
 
 
 def SNSManipulation():
-  folder="cifstructures"
+  folder="TFSI_NoDisorder"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   lowerLimit=1.5
   upperLimit=1.7
   AnglePlotValues=[]
   distanceDiff=[]
-  distanceplotValues=[]
+  distanceplotAvg=[]
+  checkArray=[]
   invalidFiles=[]
   ExportData=[]
   maxProps=[0,"",""]
   minProps=[100,"",""]
   progress=0
-  
+  isCobaltPresent=[]
+  atomToLookFor=["Fe","Co","Au","Mn"]
+  fudgeFactor=0.5
   for file in allFileNames:
     print(f"Progress: {progress}/{len(allFileNames)}")
     try:
@@ -122,14 +125,30 @@ def SNSManipulation():
         
         
         for bond in SNSBonds:
+          
           AnglePlotValues.append(bond.bondAngle)
-          for j in bond.structure: #For each atom in the bond
-            temp=[]
-            if(j.symbol=="N"):
-              for k in bond.structure[j]:
-                distanceplotValues.append(k[1])
-                temp.append(k[1])
-              distanceDiff.append((temp[0]+temp[1])/2)
+          surroundingAtoms = parser.getAtomsInARadius(bond.center,10)
+          temp=[]
+          for j,dist in bond.structure[bond.center]:
+            temp.append(dist)
+          
+          distanceDiff.append(abs(temp[0]-temp[1]))
+          distanceplotAvg.append(sum(temp)/2)
+          cobalt=False
+          for atom,distance in surroundingAtoms:
+            if(atom.symbol in atomToLookFor):
+              if(distance<=(bond.center.covalentRadius+ atom.covalentRadius+fudgeFactor) and not cobalt):
+                isCobaltPresent.append(1)
+                cobalt=True
+          
+          if(not cobalt):
+            isCobaltPresent.append(0)
+          
+
+          
+
+            
+            
 
     except Exception as e:
       print(distanceValues)
@@ -138,21 +157,16 @@ def SNSManipulation():
     progress+=1
   
 
-  # renderModule.plotHistogram(distanceplotValues,"S-N Distance","Distance (10^-10 m)","Frequency")
-  # renderModule.plotHistogram(AnglePlotValues,"S-N-S Angle","Angle (deg)","Frequency")
-  # renderModule.scatterPlot(AnglePlotValues,distanceDiff,"S-N-S Angle vs S-N-S Distance Avg ","Angle (deg)","Difference (10^-10 m)")
+  
   x,y,names=[],[],[]
   for unit in ExportData:
-      x.append(unit.angle)
-      y.append((unit.distance1+unit.distance2)/2)
-      names.append([unit.file,unit.bond1,unit.bond2])
+      x.append(unit.singleProperty)
+      y.append((unit.doubleProperty1+unit.doubleProperty1)/2)
+      names.append([unit.file,unit.atoms1,unit.atoms2])
 
-  # x1,names1=[],[]
-  # for unit in ExportData:
-  #   x1.append(unit.angle)
-  #   names1.append(unit.file)
+
   
-  InteractivePlot.plotInteractivePlot(x,y,names,"Angle (deg)","Average Distance(10^-10 m)",f"S-N-S Angle vs S-N-S Distance Avg for {folder}")
+  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues,distanceplotAvg,names,isCobaltPresent,"S-N-S Angle (deg)", "S-N Angle Average (Angstrom)",f"Angle vs Distance Avg for {folder} with {atomToLookFor} presence", False)
   #InteractivePlot.InteractiveHistogram(x1,names1,"Angle (deg)","S-N-S Angle Frequency")
   #ExportUnit.Export(ExportData,maxProps,minProps)
   print(f"Invalid Files:")
@@ -244,14 +258,15 @@ def TorisonAngle():
         
 ######################################################End of Torison Angle/Start of Main
 def main():
-  folder="TestFolder"
-  allFileNames=os.listdir(folder)
-  for file in allFileNames:
-    parser=CIFParser(f"{folder}\{file}")
-    nits=parser.getElementAtoms("N")
-    atomDistances=parser.getAtomsInARadius(nits[0],1.7)
-    parser.printNicely(atomDistances)
-    print("\n\n")
+  SNSManipulation()
+  # folder="TestFolder"
+  # allFileNames=os.listdir(folder)
+  # for file in allFileNames:
+  #   parser=CIFParser(f"{folder}\{file}")
+  #   nits=parser.getElementAtoms("N")
+  #   atomDistances=parser.getAtomsInARadius(nits[0],1.7)
+  #   parser.printNicely(atomDistances)
+  #   print("\n\n")
 main()
 
 

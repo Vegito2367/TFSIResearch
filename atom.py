@@ -1,6 +1,7 @@
 import numpy as np
 class Atom:
-  def __init__(self, inputList,conversionMatrix):
+  def __init__(self, inputList,conversionMatrix,radii):
+    self.covalentRadius=0
     elemname=inputList.pop(0)
     self.identifier=elemname
     ind1,ind2=0,0
@@ -37,6 +38,9 @@ class Atom:
     positionVector=np.array(positionVector)
     self.positionVector=np.matmul(conversionMatrix,positionVector)
     self.remainingNumbers=inputList
+
+    if(self.symbol in radii):
+      self.covalentRadius=radii[self.symbol]
   
   def __str__(self):
     return self.identifier

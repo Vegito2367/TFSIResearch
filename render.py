@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import xlsxwriter as xl
 
 class ExportUnit:
-  def __init__(self,file,singleProperty,atoms1,doublePropery1,atoms2,doubleProperty2):
+  def __init__(self,file,singleProperty,atoms1,doubleProperty1,atoms2,doubleProperty2):
     self.file=file
     self.singleProperty=singleProperty
     self.atoms1=""
@@ -11,7 +11,7 @@ class ExportUnit:
     self.atoms2=""
     for j in atoms2:
       self.atoms2+=f" {j} --"
-    self.doubleProperty1=doublePropery1
+    self.doubleProperty1=doubleProperty1
     self.doubleProperty2 = doubleProperty2
   
   @staticmethod
