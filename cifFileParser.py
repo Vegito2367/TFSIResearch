@@ -18,7 +18,8 @@ class CIFParser:
       "Au":1.36,
       "Fe":1.52,
       "Mn":1.61,
-      "S":1.11
+      "Ag":1.45,
+      "Pt":1.36
     }
     myfile=open(filePath,'r')
     self.fileName=myfile.name

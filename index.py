@@ -127,13 +127,14 @@ def SNSManipulation():
         for bond in SNSBonds:
           
           AnglePlotValues.append(bond.bondAngle)
-          surroundingAtoms = parser.getAtomsInARadius(bond.center,10)
+          
           temp=[]
           for j,dist in bond.structure[bond.center]:
             temp.append(dist)
           
           distanceDiff.append(abs(temp[0]-temp[1]))
           distanceplotAvg.append(sum(temp)/2)
+          surroundingAtoms = parser.getAtomsInARadius(bond.center,10)
           cobalt=False
           for atom,distance in surroundingAtoms:
             if(atom.symbol in atomToLookFor):
@@ -144,11 +145,6 @@ def SNSManipulation():
           if(not cobalt):
             isCobaltPresent.append(0)
           
-
-          
-
-            
-            
 
     except Exception as e:
       print(distanceValues)
@@ -166,6 +162,7 @@ def SNSManipulation():
 
 
   
+  # InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues,distanceplotAvg,names,isCobaltPresent,"S-N-S Angle (deg)", "S-N Angle Average (Angstrom)",f"Angle vs Distance Avg for {folder} with {atomToLookFor} presence", False)
   InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues,distanceplotAvg,names,isCobaltPresent,"S-N-S Angle (deg)", "S-N Angle Average (Angstrom)",f"Angle vs Distance Avg for {folder} with {atomToLookFor} presence", False)
   #InteractivePlot.InteractiveHistogram(x1,names1,"Angle (deg)","S-N-S Angle Frequency")
   #ExportUnit.Export(ExportData,maxProps,minProps)
@@ -196,6 +193,9 @@ def TorisonAngle():
   bondlengthDeltas=[]
   bondlengthAverage=[]
   torsionDeltas=[]
+  isCobaltPresent=[]
+  atomToLookFor=["Fe","Co","Au","Mn","Ag","Pt"]
+  fudgeFactor=0.5
 
 
   for file in allFileNames:
@@ -208,13 +208,26 @@ def TorisonAngle():
           progress+=1
           continue
         distanceValues={}
-        SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues)
+        SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues,ExportDataTorsion)
         for bond in SNSBonds:
           temp=[]
           for s,dist in bond.structure[bond.center]:
             temp.append(dist)
+          
+          
           bondlengthAverage.append((temp[0]+temp[1])/2)
           bondlengthDeltas.append(abs(temp[0]-temp[1]))
+          surroundingAtoms = parser.getAtomsInARadius(bond.center,10)
+          cobalt=False
+          for atom,distance in surroundingAtoms:
+            if(atom.symbol in atomToLookFor):
+              if(distance<=(bond.center.covalentRadius+ atom.covalentRadius+fudgeFactor) and not cobalt):
+                isCobaltPresent.append(atom.symbol)
+                cobalt=True
+          
+          if(not cobalt):
+            isCobaltPresent.append(0)
+
           AnglePlotValues.append(bond.bondAngle)
           carbons = parser.getElementAtoms("C")
           cDistLeft,cDistRight=100,100
@@ -241,7 +254,7 @@ def TorisonAngle():
           TorisonAngleAverages.append((TorisonAngleRight+TorisonAngleLeft)/2)
           torsionDeltas.append(abs(TorisonAngleRight-TorisonAngleLeft))
           names.append(f"{file} {cLeft} {bond.left} {bond.center} {bond.right} {cRight}\n||{TorisonAngleRight} {A1} {B1} {C1} {D1} || {TorisonAngleLeft} {C1} {B1} {A1} {cLeft}")
-          ExportDataTorsion.append(ExportUnit(file,bond.bondAngle,[A1,B1,C1,D1],TorisonAngleRight,[C1,B1,A1,cLeft],TorisonAngleLeft))
+          # ExportDataTorsion.append(ExportUnit(file,bond.bondAngle,[A1,B1,C1,D1],TorisonAngleRight,[C1,B1,A1,cLeft],TorisonAngleLeft))
   
     except Exception as e:
       invalidFiles.append(file)
@@ -249,16 +262,14 @@ def TorisonAngle():
       raise e
     
     progress+=1
-  # InteractivePlot.plotInteractivePlot(bondlengthDeltas,torsionDeltas,names,"Bond Deltas","Torsion Angle Deltas","S-N Bond Delta vs Torsion Angle Delta")
-  # InteractivePlot.plotInteractivePlot(TorisonAngleAverages, bondlengthDeltas,names,"Torsion Angle","S-N Bond Length Delta","S-N Bond Length Delta vs Torsion Angle")
-  # InteractivePlot.plotInteractivePlot(bondlengthAverage,TorisonAngleAverages,names,"S-N Bond Length Average","Torsion Angle","S-N Bond Length Average vs Torsion Angle")
-  InteractivePlot.plotInteractivePlot(AnglePlotValues,TorisonAngleAverages,names,"S-N-S Angle","Torsion Angle Average",f"S-N-S Angle vs Torsion Angle Average for {folder}")
-  ExportUnit.ExportSingeProp_DoubleProp(ExportDataTorsion,"SNS_Angle","Torsion Angle",folder)
+  
+  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues,bondlengthDeltas,names,isCobaltPresent,"SNS Angle","Bond Length Deltas",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atomToLookFor} presence", False)
+  # ExportUnit.ExportSingeProp_DoubleProp(ExportDataTorsion,"SNS_Angle","Torsion Angle",folder) For excel Sheet only
         
         
 ######################################################End of Torison Angle/Start of Main
 def main():
-  SNSManipulation()
+  TorisonAngle()
   # folder="TestFolder"
   # allFileNames=os.listdir(folder)
   # for file in allFileNames:
