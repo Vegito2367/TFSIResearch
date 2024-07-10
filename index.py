@@ -197,6 +197,9 @@ def TorisonAngle():
   statscounter=[]
   testParse=CIFParser(f"{folder}\{allFileNames[0]}")
   atomToLookFor=list(testParse.covalentRadii.keys())
+  atomDictionaryList={}
+  for atom in atomToLookFor:
+    atomDictionaryList[atom]=[]
   fudgeFactor=1
 
 
@@ -219,18 +222,17 @@ def TorisonAngle():
           
           bondlengthAverage.append((temp[0]+temp[1])/2)
           bondlengthDeltas.append(abs(temp[0]-temp[1]))
-          surroundingAtoms = parser.getAtomsInARadius(bond.center,3)
-          cobalt=False
-          for atom,distance in surroundingAtoms:
-            if(atom.symbol in atomToLookFor):
-              #print(distance,(bond.center.covalentRadius+ atom.covalentRadius+fudgeFactor))
-              if(distance<=(bond.center.covalentRadius + atom.covalentRadius+fudgeFactor) and not cobalt):
-                isCobaltPresent.append(atom.symbol)
-                statscounter.append(atom.symbol)
-                cobalt=True
-          
-          if(not cobalt):
-            isCobaltPresent.append("N/A")
+          for atomSymbol in atomToLookFor:
+            surroundingAtoms = parser.getAtomsInARadius(bond.center,3)
+            cobalt=False
+            for atom,distance in surroundingAtoms:
+              if(atom.symbol==atomSymbol):
+                if(distance<=(bond.center.covalentRadius + atom.covalentRadius+fudgeFactor) and not cobalt):
+                  atomDictionaryList[atomSymbol].append(atom.symbol)
+                  cobalt=True
+            
+            if(not cobalt):
+              atomDictionaryList[atomSymbol].append("N/A")
 
           AnglePlotValues.append(bond.bondAngle)
           carbons = parser.getElementAtoms("C")
@@ -267,10 +269,12 @@ def TorisonAngle():
     
     progress+=1
   
-  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,isCobaltPresent,"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with all metal presence", True)
+  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList["Au"],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with all metal presence", False)
   
+  for atomSymbol in atomDictionaryList:
+    print(f"Percentage presence of {atomSymbol} {((atomDictionaryList[atomSymbol].count(atomSymbol)/len(atomDictionaryList[atomSymbol]))*100):0.2f}")
   #InteractivePlot.InteractiveHistogram(isCobaltPresent,names,"Atom Symbols", f"frequency in {folder}")
-  renderModule.plotHistogram(statscounter,f"frequency in {folder}","Symbols","Count")
+  #renderModule.plotHistogram(statscounter,f"frequency in {folder}","Symbols","Count")
   # ExportUnit.ExportSingeProp_DoubleProp(ExportDataTorsion,"SNS_Angle","Torsion Angle",folder) For excel Sheet only
         
         
