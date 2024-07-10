@@ -194,8 +194,10 @@ def TorisonAngle():
   bondlengthAverage=[]
   torsionDeltas=[]
   isCobaltPresent=[]
-  atomToLookFor=["Fe","Co","Au","Mn","Ag","Pt"]
-  fudgeFactor=0.5
+  statscounter=[]
+  testParse=CIFParser(f"{folder}\{allFileNames[0]}")
+  atomToLookFor=list(testParse.covalentRadii.keys())
+  fudgeFactor=1
 
 
   for file in allFileNames:
@@ -217,16 +219,18 @@ def TorisonAngle():
           
           bondlengthAverage.append((temp[0]+temp[1])/2)
           bondlengthDeltas.append(abs(temp[0]-temp[1]))
-          surroundingAtoms = parser.getAtomsInARadius(bond.center,10)
+          surroundingAtoms = parser.getAtomsInARadius(bond.center,3)
           cobalt=False
           for atom,distance in surroundingAtoms:
             if(atom.symbol in atomToLookFor):
-              if(distance<=(bond.center.covalentRadius+ atom.covalentRadius+fudgeFactor) and not cobalt):
+              #print(distance,(bond.center.covalentRadius+ atom.covalentRadius+fudgeFactor))
+              if(distance<=(bond.center.covalentRadius + atom.covalentRadius+fudgeFactor) and not cobalt):
                 isCobaltPresent.append(atom.symbol)
+                statscounter.append(atom.symbol)
                 cobalt=True
           
           if(not cobalt):
-            isCobaltPresent.append(0)
+            isCobaltPresent.append("N/A")
 
           AnglePlotValues.append(bond.bondAngle)
           carbons = parser.getElementAtoms("C")
@@ -263,7 +267,10 @@ def TorisonAngle():
     
     progress+=1
   
-  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues,bondlengthDeltas,names,isCobaltPresent,"SNS Angle","Bond Length Deltas",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atomToLookFor} presence", False)
+  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,isCobaltPresent,"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with all metal presence", True)
+  
+  #InteractivePlot.InteractiveHistogram(isCobaltPresent,names,"Atom Symbols", f"frequency in {folder}")
+  renderModule.plotHistogram(statscounter,f"frequency in {folder}","Symbols","Count")
   # ExportUnit.ExportSingeProp_DoubleProp(ExportDataTorsion,"SNS_Angle","Torsion Angle",folder) For excel Sheet only
         
         

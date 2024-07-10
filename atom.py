@@ -1,6 +1,7 @@
 import numpy as np
 class Atom:
   def __init__(self, inputList,conversionMatrix,radii):
+    
     self.covalentRadius=0
     elemname=inputList.pop(0)
     self.identifier=elemname

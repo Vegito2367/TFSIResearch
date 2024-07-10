@@ -64,14 +64,12 @@ class InteractivePlot:
 
   def InteractiveHistogram(x,pointData, xlabel,title):
     df = pd.DataFrame({
-    'Angle': x,
+    xlabel: x,
     'Compound': pointData
     })
 
-    fig=px.histogram(df,x='Angle',color='Angle',hover_data=['Compound'])
-    #fig = px.scatter(df, x='Angle', y='Distance', color='Angle', hover_data=['Compound'])
+    fig=px.histogram(df,x=xlabel,color=xlabel,hover_data=['Compound'])
     fig.update_layout(title=title,
                   xaxis_title=xlabel,
                   yaxis_title="Frequency")
-    fig.write_html("exportfile.html")
     fig.show()
