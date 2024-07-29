@@ -273,7 +273,7 @@ def TorisonAngle():
     progress+=1
   
   for atom in atomDictionaryList:
-    InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atom} presence", True)
+    InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atom} presence", False)
   
   for atomSymbol in atomDictionaryList:
     print(f"Percentage presence of {atomSymbol} {((atomDictionaryList[atomSymbol].count(atomSymbol)/len(atomDictionaryList[atomSymbol]))*100):0.2f}")
