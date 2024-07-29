@@ -232,7 +232,10 @@ def TorisonAngle():
                   cobalt=True
             
             if(not cobalt):
-              atomDictionaryList[atomSymbol].append("N/A")
+              if(parser.containsAtom(atomSymbol)):
+                atomDictionaryList[atomSymbol].append("Metal Present in Compound")
+              else:
+                atomDictionaryList[atomSymbol].append("N/A")
 
           AnglePlotValues.append(bond.bondAngle)
           carbons = parser.getElementAtoms("C")
@@ -269,7 +272,8 @@ def TorisonAngle():
     
     progress+=1
   
-  InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList["Au"],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with all metal presence", False)
+  for atom in atomDictionaryList:
+    InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atom} presence", True)
   
   for atomSymbol in atomDictionaryList:
     print(f"Percentage presence of {atomSymbol} {((atomDictionaryList[atomSymbol].count(atomSymbol)/len(atomDictionaryList[atomSymbol]))*100):0.2f}")
