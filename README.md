@@ -1,6 +1,8 @@
 # TFSI Crystallography Analysis
 
-This repository contains Python code for analyzing X-ray crystallographic data of bis(trifluoromethanesulfonyl)imide (TFSI) compounds.
+This repository contains Python code for analyzing X-ray crystallographic data of bis(trifluoromethanesulfonyl)imide (TFSI) compounds. View at:
+
+https://vegito2367.github.io/TFSIResearch/
 
 ## Overview
 
@@ -25,7 +27,7 @@ TFSI (bis(trifluoromethanesulfonyl)imide) is an important anion in various appli
 Install the required packages using:
 
 ## Scripts
-
+- `index.py` : Executes the main analysis pipeline
 - `cifFileParser.py`: TFSI structural analysis functions
 - `render.py`: Plotting and visualization functions
 - `heatmap.py`: Interactive rendering
