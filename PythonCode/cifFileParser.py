@@ -13,7 +13,7 @@ class CIFParser:
   
 
   def __init__(self,filePath):
-    self.covalentRadii={
+    self.covalentRadii={#Did not put nitrogen covalent radius  
   "Cu":1.32,
   "Ag":1.45,
   "Au":1.36,

@@ -30,7 +30,7 @@ class InteractivePlot:
     file.close()
 
 
-  def plotInteractivePlotColorArray(x,y,pointData,colorArray, xlabel,ylabel,title, makeFile):
+  def plotInteractivePlotColorArray(x,y,pointData,colorArray, xlabel,ylabel,title, makeFile,fileName):
     
   ########################Angle vs Average Distance
     
@@ -54,8 +54,8 @@ class InteractivePlot:
     fig.show()
     
     if(makeFile):
-      file = open(f"{title}.html","w")
-      fig.write_html(f"{title}.html")
+      file = open(f"{fileName}.html","w")
+      fig.write_html(f"{fileName}.html")
       file.close()
 
 

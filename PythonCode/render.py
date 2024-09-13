@@ -56,3 +56,39 @@ class Render:
     plt.ylabel(yLabel)
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.show()
+
+  def barGraph(self, xData,yData, title, xLabel, yLabel):
+    plt.bar(xData, yData)
+    plt.title(title)
+    plt.xlabel(xLabel)
+    plt.ylabel(yLabel)
+    plt.grid(True, linestyle='--', alpha=0.3)
+    plt.show()
+  
+  def barGraphFrequencies(self,xData,yData, totalCount,title,xLabel, yLabel):
+    fig,ax1=plt.subplots()
+    ax1.bar(xData,yData,color='blue',alpha=0.6)
+    ax1.set_xlabel(xLabel)
+    ax1.set_ylabel(yLabel,color='blue')
+    ax2=ax1.twinx()
+    ax2.set_ylabel('Percentage',color='red')
+    percentages=[round(100*yElem/totalCount,3) for yElem in yData]
+    ax2.plot(xData,percentages,'r--',marker='o')
+    ax2.set_ylim(0,100)
+    plt.title(title)
+    plt.show()
+
+  def barGraphHistogramPercentage(self,yData, totalCount,title,xLabel, yLabel):
+    fig,ax1=plt.subplots()
+    counts,bins,patches=ax1.hist(yData,bins=5,edgecolor="black",color='blue',alpha=0.6)
+    ax1.set_xlabel(xLabel)
+    ax1.set_ylabel(yLabel, color='blue')
+    ax1.set_title(title)
+    ax2 = ax1.twinx()
+    ax2.set_ylabel('Relative Percentage', color='red')
+    percentages=[round(100*count/totalCount,3) for count in counts]
+
+    ax2.plot(bins[:-1], percentages, 'r--', marker='o')
+    ax2.set_ylim(0,100)
+    plt.title(title)
+    plt.show()

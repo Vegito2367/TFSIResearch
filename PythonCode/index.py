@@ -181,7 +181,7 @@ def Extremes(maxProps, minProps, file, n, s, distance):
       minProps[2]=f"{n} -- {s}"
 ######################################################End of SNSManipulation/Start of Torison Angle
 def TorisonAngle():
-  folder="TFSI_NoDisorder"
+  folder="LatestTFSI_NoDisorder"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   AnglePlotValues=[]
@@ -197,12 +197,12 @@ def TorisonAngle():
   statscounter=[]
   testParse=CIFParser(f"{folder}\{allFileNames[0]}")
   atomToLookFor=list(testParse.covalentRadii.keys())
-  atomDictionaryList={}
+  atomDictionaryList={} #Stores a list of atoms that are present in the compound for each atom
   for atom in atomToLookFor:
     atomDictionaryList[atom]=[]
   fudgeFactor=1
 
-
+  totalSNS=0
   for file in allFileNames:
     
     print(f"Progress: {progress}/{len(allFileNames)}")
@@ -214,6 +214,7 @@ def TorisonAngle():
           continue
         distanceValues={}
         SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues,ExportDataTorsion)
+        totalSNS+=len(SNSBonds)
         for bond in SNSBonds:
           temp=[]
           for s,dist in bond.structure[bond.center]:
@@ -228,12 +229,12 @@ def TorisonAngle():
             for atom,distance in surroundingAtoms:
               if(atom.symbol==atomSymbol):
                 if(distance<=(bond.center.covalentRadius + atom.covalentRadius+fudgeFactor) and not cobalt):
-                  atomDictionaryList[atomSymbol].append(atom.symbol)
+                  atomDictionaryList[atomSymbol].append(atom.symbol)  #The atom symbol is counted as a metal connected to the TFSI
                   cobalt=True
             
             if(not cobalt):
               if(parser.containsAtom(atomSymbol)):
-                atomDictionaryList[atomSymbol].append("Metal Present in Compound")
+                atomDictionaryList[atomSymbol].append("Metal Present in Compound")  #The atom symbol is present in the compound but not connected to the TFSI
               else:
                 atomDictionaryList[atomSymbol].append("N/A")
 
@@ -272,13 +273,40 @@ def TorisonAngle():
     
     progress+=1
   
-  for atom in atomDictionaryList:
-    InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atom} presence", False)
+  # for atom in atomDictionaryList:
+  #   InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle","Bond Length avg",f"S-N-S Angle vs Bond Length Deltas for {folder} with {atom} presence", False, f"{folder}_{atom}_SNS_Angle_BondLength")
   
+  totalLen=[]
+  metalPresenceCount=0
+  metalPresent=0
   for atomSymbol in atomDictionaryList:
-    print(f"Percentage presence of {atomSymbol} {((atomDictionaryList[atomSymbol].count(atomSymbol)/len(atomDictionaryList[atomSymbol]))*100):0.2f}")
+    metalCount=atomDictionaryList[atomSymbol].count(atomSymbol)
+    metalPresent+=atomDictionaryList[atomSymbol].count("Metal Present in Compound")
+    totalLen.append([metalCount,atomSymbol])
+    metalPresenceCount+=metalCount
+    print(f"Percentage presence of {atomSymbol} {(metalCount/len(atomDictionaryList[atomSymbol])*100):0.6f}")
+    temp.append((atomDictionaryList[atomSymbol].count(atomSymbol)/len(atomDictionaryList[atomSymbol])*100))
+  
+  #Each list in atomDictionaryList has length = total number of compounds
+  histX=[]
+  histY=[]
+  for num,symbol in totalLen:
+    histX.append(symbol)
+    histY.append(num)
+  print(totalLen)
+  print(metalPresenceCount)
+  print("Total SNS Bonds: ",totalSNS)
+  print("Number of Avgs",len(bondlengthAverage))
+  val = (metalPresenceCount/totalSNS)*100
+  # renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency")
+  # renderModule.barGraphFrequencies(["Metal Bound","Metal Unbound but Present"],[metalPresenceCount,metalPresent],totalSNS,"Metal Presence in Compound","Presence","Relative Size")
+  renderModule.plotHistogram(AnglePlotValues,"SNS Angle Spread","Angle (deg)","Frequency")
+  renderModule.plotHistogram(bondlengthAverage,"SN Distance Spread","SN Distance (Ang)","Frequency")
+  # renderModule.barGraph(["Metal Presence","Metal Abscence"],[val,100-val],"Metal Presence in Compound","Presence","Relative Size")
+
+  
   #InteractivePlot.InteractiveHistogram(isCobaltPresent,names,"Atom Symbols", f"frequency in {folder}")
-  #renderModule.plotHistogram(statscounter,f"frequency in {folder}","Symbols","Count")
+  
   # ExportUnit.ExportSingeProp_DoubleProp(ExportDataTorsion,"SNS_Angle","Torsion Angle",folder) For excel Sheet only
         
         
