@@ -34,9 +34,25 @@
   }
 
   .hero h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: #00509e;
+		padding-bottom: 2.5rem;
+		font-family: Verdana, Geneva, Tahoma, sans-serif;
   }
+
+	h2{
+		font-size: 2rem;
+		color: #00509e;
+		font-family: var(--font-mono);
+	}
+
+	.intro p {
+		font-size: 1.25rem;
+		color: #333;
+		margin-bottom: 2rem;
+		text-align: justify;
+		font-family: var(--font-mono);
+	}
 
   .intro, .highlights, .contact {
     margin-bottom: 2rem;
@@ -80,8 +96,7 @@
 <main>
   <section class="hero">
     <h1>TFSI Compounds physical properties analysis by Blakemore Lab and Tej Gumaste</h1>
-    <p>Join us as we delve into the molecular world and unravel the mysteries of chemical reactions.</p>
-    <a href="#highlights" class="button">Explore Highlights</a>
+    <a href="/Graphs" class="button">View Graphs</a>
   </section>
 
   <section class="intro">
