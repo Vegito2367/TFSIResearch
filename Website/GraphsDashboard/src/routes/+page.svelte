@@ -77,48 +77,16 @@
     background-color: #00376d;
   }
 </style>
-
-<header>
-  <h1>Chemistry Research Project</h1>
-  <p>Exploring the molecular interactions in chemical reactions</p>
-</header>
-
 <main>
   <section class="hero">
-    <h1>Welcome to Our Chemistry Research!</h1>
+    <h1>TFSI Compounds physical properties analysis by Blakemore Lab and Tej Gumaste</h1>
     <p>Join us as we delve into the molecular world and unravel the mysteries of chemical reactions.</p>
     <a href="#highlights" class="button">Explore Highlights</a>
   </section>
 
   <section class="intro">
     <h2>Project Overview</h2>
-    <p>Our research focuses on understanding the molecular interactions that drive complex chemical reactions. With advanced tools and models, we aim to provide insights into reaction mechanisms that can impact various fields of chemistry, from industrial processes to environmental science.</p>
-  </section>
-
-  <section id="highlights" class="highlights">
-    <h2>Research Highlights</h2>
-    <div>
-      <h3>Reaction Mechanism Analysis</h3>
-      <p>We use computational tools to analyze the mechanisms behind key chemical reactions.</p>
-    </div>
-    <div>
-      <h3>3D Modeling of Compounds</h3>
-      <p>Our team employs state-of-the-art 3D modeling techniques to visualize molecular structures and interactions.</p>
-    </div>
-    <div>
-      <h3>Collaboration with Industry</h3>
-      <p>Partnering with industrial experts to apply our research in real-world chemical applications.</p>
-    </div>
-  </section>
-
-  <section id="contact" class="contact">
-    <h2>Contact Us</h2>
-    <form on:submit|preventDefault={submitForm}>
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <textarea name="message" placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
+    <p>Chemical data science is an emerging field within the broader field of chemistry that has numerous applications of high relevance to a variety of academic and industrial pursuits. With quantum computing and artificial intelligence becoming more mainstream, it is of great interest for not only the data scientist, but the chemist as well, to take advantage of these technologies to streamline data processing, analyze large data sets, and reveal new chemical insights that would be otherwise hidden by the sheer amount and depth/complexity of available data. In this project, modern computing and fundamental chemical analysis have been combined in order to pursue new insights into the structural behavior of the weakly coordinating anion bis(trifluoromethylsulfonyl)imide, otherwise known as TFSI. Taking a data science approach, published solid-state crystal structures available in the Cambridge Structural Database (CSD) including one or more TFSI species of interest were categorized and statistically analyzed using software built for this purpose. The goal of this project from a chemical perspective was to determine the structural characteristics displayed by TFSI as inferred from the structural data. The goal of this project from a data-science perspective was to develop a new software program using Python to parse Crystallographic Information Files (CIF) obtained from the CSD into statistically relevant information that could be compared across the individual structural data sets. This research endeavor aims to highlight the applications of data science to an otherwise foreign area of research (structural chemistry) and outline the capabilities of data processing for future structural and chemical investigations.</p>
   </section>
 </main>
 

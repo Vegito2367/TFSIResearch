@@ -5,9 +5,7 @@
 </script>
 
 <header>
-	<nav>
-		
-	</nav>
+
 </header>
 
 <style>
@@ -16,7 +14,7 @@
 		justify-content: space-between;
 	}
 
-	.corner {
+	/* .corner {
 		width: 3em;
 		height: 3em;
 	}
@@ -52,6 +50,8 @@
 	}
 
 	ul {
+		display: flex;
+		justify-content: space-between;
 		position: relative;
 		padding: 0;
 		margin: 0;
@@ -93,7 +93,7 @@
 		letter-spacing: 0.1em;
 		text-decoration: none;
 		transition: color 0.2s linear;
-	}
+	} */
 
 	a:hover {
 		color: var(--color-theme-1);
