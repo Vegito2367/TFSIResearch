@@ -2,7 +2,7 @@
 
 This repository contains Python code for analyzing X-ray crystallographic data of bis(trifluoromethanesulfonyl)imide (TFSI) compounds. View at:
 
-https://vegito2367.github.io/TFSIResearch/
+[Graphs Dashboard Here](https://tfsi-research.vercel.app/)
 
 ## Overview
 
