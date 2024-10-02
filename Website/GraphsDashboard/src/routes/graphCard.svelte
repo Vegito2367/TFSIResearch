@@ -36,5 +36,6 @@
 <div class="card">
   <div class="title">{title}</div>
   <a href="{src}" class="button" target="_blank">View Graph</a>
+  
   <!-- Add your graph or other content here -->
 </div>
