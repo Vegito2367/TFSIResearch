@@ -1,6 +1,7 @@
 <script>
   // Add your script logic here
-  import GraphCard from "../graphCard.svelte";
+  import Graph from "../graph.svelte";
+import GraphCard from "../graphCard.svelte";
   let message = "η–N Metal Binding to TFSI in the solid state";
   let metalToGraphMapping = [
     {
@@ -47,9 +48,20 @@
     {#each metalToGraphMapping as metalUnit}
     <GraphCard
       title="S–N–S Angle vs. Bond Length avg for Structures containing {metalUnit.metal}"
-      src={metalUnit.fileLocation} element={metalUnit.metal}
+       element={metalUnit.metal}
     />
   {/each}
+    <GraphCard
+      title="Metal Presence in TFSI Structures"
+      element="MetalPresenceHist" />
+
+    <GraphCard
+      title="TFSI structures metal-free vs metal containing" 
+      element="MetalContainingHist" />
+    
+    <GraphCard
+      title="Sensitivity Analysis"
+      element="fudgeAnalysis" /> 
   </div>
   
 
@@ -91,5 +103,7 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
+    padding: 2rem;
+    text-align: center;
   }
 </style>

@@ -1,7 +1,6 @@
 <script>
   // Add your script logic here
   export let title = "Graph Card";
-  export let src = "https://example.com";
   export let element="Ag";
 </script>
 
