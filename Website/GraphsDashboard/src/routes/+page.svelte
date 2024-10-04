@@ -98,7 +98,7 @@
 </main>
 
 <footer>
-  <p>&copy; 2024 Chemistry Research Project | All Rights Reserved</p>
+  <p>Made by Tej Gumaste - EECS and Chemistry @ KU</p>
 </footer>
 
 
