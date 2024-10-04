@@ -38,7 +38,7 @@
   ];
 </script>
 
-<main>
+<main class="mainPadding">
   <section class="hero">
     <p>{message}</p>
     <p class="subtitle">Results Dashboard</p>
@@ -47,7 +47,7 @@
     {#each metalToGraphMapping as metalUnit}
     <GraphCard
       title="S–N–S Angle vs. Bond Length avg for Structures containing {metalUnit.metal}"
-      src={metalUnit.fileLocation}
+      src={metalUnit.fileLocation} element={metalUnit.metal}
     />
   {/each}
   </div>
@@ -80,5 +80,16 @@
     color: #00509e;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: 300;
+  }
+
+  .mainPadding{
+    flex: 1;
+		display: flex;
+		flex-direction: column;
+		padding: 1rem;
+		width: 100%;
+		max-width: 64rem;
+		margin: 0 auto;
+		box-sizing: border-box;
   }
 </style>

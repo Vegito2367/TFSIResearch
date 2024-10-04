@@ -2,6 +2,7 @@
   // Add your script logic here
   export let title = "Graph Card";
   export let src = "https://example.com";
+  export let element="Ag";
 </script>
 
 <style>
@@ -45,5 +46,5 @@
 
 <div class="card">
   <div class="title">{title}</div>
-  <a href="{src}" class="button" target="_blank">View Graph</a>
+  <a href="/{element}" class="button" target="_blank">View Graph</a>
 </div>

@@ -1,5 +1,6 @@
 <script>
     // Add your script logic here
+    export let element="Ag";
 </script>
 
 <style>
@@ -16,5 +17,5 @@
 
 <div class="container">
     <!-- svelte-ignore a11y-missing-attribute -->
-    <iframe style="margin: 0%; padding:0%;" src="https://vegito2367.github.io/HostedTFSIgraphs/AgGraph.html?v=1696240260" width="100%" height="800px"></iframe>
+    <iframe src="https://vegito2367.github.io/HostedTFSIgraphs/{element}Graph.html?v=1696240260" width="1500" height="900px"></iframe>
 </div>

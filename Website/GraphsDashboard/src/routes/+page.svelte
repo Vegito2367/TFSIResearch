@@ -26,6 +26,7 @@
     padding: 2rem;
     text-align: center;
   }
+  
 
   .hero {
     background-color: #e3f2fd;
@@ -72,9 +73,19 @@
     background-color: #00376d;
   }
 
+  .mainPadding{
+    flex: 1;
+		display: flex;
+		flex-direction: column;
+		padding: 1rem;
+		width: 100%;
+		max-width: 64rem;
+		margin: 0 auto;
+		box-sizing: border-box;
+  }
 
 </style>
-<main class="MainPage">
+<main class="MainPage mainPadding">
   <section class="hero">
     <h1>TFSI Compounds physical properties analysis by Blakemore Lab and Tej Gumaste</h1>
     <a href="/Graphs" class="button">View Graphs</a>
