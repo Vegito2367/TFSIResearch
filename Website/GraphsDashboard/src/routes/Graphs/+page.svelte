@@ -2,7 +2,7 @@
   // Add your script logic here
   import Graph from "../graph.svelte";
 import GraphCard from "../graphCard.svelte";
-  let message = "η–N Metal Binding to TFSI in the solid state";
+  let message = "Analysis of Metal Binding to TFSI";
   let metalToGraphMapping = [
     {
       metal: "Au",
