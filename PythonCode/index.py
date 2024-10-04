@@ -284,8 +284,8 @@ def TorisonAngle():
     
     progress+=1
   
-  #GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList)
-  GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, {"Au":atomDictionaryList["Au"],"Ag":atomDictionaryList["Ag"]})
+  GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList)
+  # GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, {"Au":atomDictionaryList["Au"],"Ag":atomDictionaryList["Ag"]})
   totalLen=[]
   metalBoundCount=0
   metalPresent=0
@@ -323,7 +323,7 @@ def TorisonAngle():
 
 def GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList):
     for atom in atomDictionaryList:
-      InteractivePlot.plotInteractivePlotColorArray(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", True, f"WithCaption_{folder}_{atom}_SNS_Angle_BondLength",atom)        
+      InteractivePlot.plotInteractivePlot(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", True, f"WithCaption_{folder}_{atom}_SNS_Angle_BondLength")        
         
 ######################################################End of Torison Angle
 def getDataFromExcelFiles():
@@ -370,7 +370,7 @@ def getDataFromExcelFiles():
   
 
 def main():
-  getDataFromExcelFiles()
+  TorisonAngle()
   
 main()
 

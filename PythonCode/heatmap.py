@@ -30,7 +30,7 @@ class InteractivePlot:
     file.close()
 
 
-  def plotInteractivePlotColorArray(x,y,pointData,colorArray, xlabel,ylabel,title, makeFile,fileName, metal):
+  def plotInteractivePlotCaption(x,y,pointData,colorArray, xlabel,ylabel,title, makeFile,fileName, metal):
     
   ########################Angle vs Average Distance
     
@@ -66,6 +66,33 @@ class InteractivePlot:
 
 # Adjust layout to give extra space for the caption
     fig.update_layout(margin=dict(t=40, b=200))  # Increase bottom margin
+
+    fig.show()
+    if(makeFile):
+      file = open(f"{fileName}.html","w")
+      fig.write_html(f"{fileName}.html")
+      file.close()
+
+  def plotInteractivePlot(x,y,pointData,colorArray, xlabel,ylabel,title, makeFile,fileName):
+    
+  ########################Angle vs Average Distance
+    
+  #####################
+
+    df = pd.DataFrame({
+    xlabel: x,
+    ylabel: y,
+    "Data": pointData,
+    "Legend": colorArray
+    })
+
+    
+
+    fig = px.scatter(df, x=xlabel, y=ylabel,color="Legend", symbol="Legend", hover_data=['Data'])
+    fig.update_layout(title=title,
+                  xaxis_title=xlabel,
+                  yaxis_title=ylabel)
+
 
     fig.show()
     if(makeFile):
