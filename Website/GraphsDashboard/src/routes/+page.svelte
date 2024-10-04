@@ -22,7 +22,7 @@
     padding: 1rem;
   }
 
-  main {
+  .MainPage {
     padding: 2rem;
     text-align: center;
   }
@@ -72,28 +72,9 @@
     background-color: #00376d;
   }
 
-  input, textarea {
-    width: 100%;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
 
-  button {
-    padding: 0.75rem 1.5rem;
-    background-color: #00509e;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background-color: #00376d;
-  }
 </style>
-<main>
+<main class="MainPage">
   <section class="hero">
     <h1>TFSI Compounds physical properties analysis by Blakemore Lab and Tej Gumaste</h1>
     <a href="/Graphs" class="button">View Graphs</a>

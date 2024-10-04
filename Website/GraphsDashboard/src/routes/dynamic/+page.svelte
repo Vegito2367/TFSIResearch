@@ -1,3 +1,6 @@
+<script>
+ import Graph from "../graph.svelte";
+</script>
 <main>
-    Hello world
+    <Graph />
 </main>
