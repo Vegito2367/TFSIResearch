@@ -35,7 +35,7 @@
   }
 
   .hero h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     color: #00509e;
 		padding-bottom: 1.5rem;
 		font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -88,7 +88,7 @@
 </style>
 <main class="MainPage mainPadding">
   <section class="hero">
-    <h1>Analysis of Structural Properties of Anion</h1>
+    <h1>Analysis of Structural Properties of TFSI Anion</h1>
     <h2><i>Tej Gumaste, Fynnegan L. Cooper, James D. Blakemore</i></h2>
     <h2 style="padding-bottom: 3rem;"><b>University Of Kansas</b></h2>
     <a href="/Graphs" class="button">View Graphs</a>
