@@ -183,7 +183,7 @@ def Extremes(maxProps, minProps, file, n, s, distance):
       minProps[2]=f"{n} -- {s}"
 ######################################################End of SNSManipulation/Start of Torison Angle
 def TorisonAngle():
-  folder="LatestTFSI_NoDisorder"
+  folder="TFSI_NoDisorder"
   allFileNames=os.listdir(folder)
   renderModule=Render()
   AnglePlotValues=[]
@@ -196,7 +196,8 @@ def TorisonAngle():
   bondlengthAverage=[]
   torsionDeltas=[]
   fudgeFactorMetalsBound={}
-  testParse=CIFParser(f"{folder}\{allFileNames[0]}")
+  print(allFileNames)
+  testParse=CIFParser(os.path.join(folder,allFileNames[0]))
   atomToLookFor=list(testParse.covalentRadii.keys())
   atomDictionaryList={} #Stores a list of atoms that are present in the compound for each atom
   for atom in atomToLookFor:
@@ -212,7 +213,7 @@ def TorisonAngle():
     
     print(f"Progress: {progress}/{len(allFileNames)}")
     try:
-        parser=CIFParser(f"{folder}\{file}")
+        parser=CIFParser(f"{folder}/{file}")
         if(not parser.validFile):
           invalidFiles.append([file,"Invalid Input"])
           progress+=1
