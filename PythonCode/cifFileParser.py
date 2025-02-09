@@ -4,40 +4,44 @@ from atom import Atom
 import os
 
 class CIFParser:
-  @staticmethod
-  def printNicely(myList):
-    output=""
-    for j in myList:
-      print(j)
-
   
-
   def __init__(self,filePath):
-    self.covalentRadii={#Did not put nitrogen covalent radius  
-  "Cu":1.32,
-  "Ag":1.45,
-  "Au":1.36,
-  "Pt":1.36,
-  "Pd":1.39,
-  "Hg":1.32,
-  "Fe":1.52,
-  "Ru":1.46
-}
+    #Stores the covalent radii of the metals of interest
+    self.covalentRadii={  
+      "Cu":1.32,
+      "Ag":1.45,
+      "Au":1.36,
+      "Pt":1.36,
+      "Pd":1.39,
+      "Hg":1.32,
+      "Fe":1.52,
+      "Ru":1.46
+    }
+  
+    #S-N-S
     
     myfile=open(filePath,'r')
     self.fileName=myfile.name
     self.validFile=True
+    self.cellvalues={}
+    self.Atoms=[]
     alllines=myfile.read().split("\n")
+    '''
+    Below Try catch is used to validate the file.
+    If file does not contain the _atom_site_fract_z, then the file is invalid.
+    This particular keyword is in all CIF files that have a structure associated with them.
+    '''
     try:
       startIndex=alllines.index("_atom_site_fract_z")+1
     except:
       self.validFile=False
       return
-    self.cellvalues={}
-    for i in range(startIndex): #Retrieveing cell properties
+    
+    #Parsing lines and retrieving cell properties
+    for i in range(startIndex): 
       if("_cell_length_a" in alllines[i]):
         val=(alllines[i].split(" ")[1])
-        if("(" in val):
+        if("(" in val): #Used to deal with the uncertainty factor in the cell length
           val=val[:val.index("(")]
         self.cellvalues["cell_length_a"]=(float(val))
 
@@ -71,9 +75,17 @@ class CIFParser:
           val=val[:val.index("(")]
         self.cellvalues["cell_angle_gamma"]=(float(val))
     
+    #Loading up the rows of atom coordinates and symbols
     textofInterest=alllines[startIndex:alllines.index("#END")]
 
-    
+    '''
+    The CIF coordinate system is different from the Cartesian coordinate system.
+    The file uses a spherical coordinate system to represent the atoms.
+    As a result, the spherical coordinates are multiplied with an invertible conversion matrix to get the Cartesian coordinates.
+    The cell values are used in conjunction with an alpha* value to get the conversion matrix.
+    The alpha* value is split into a numerator and a denominator for ease of use
+    The ConversionMatrix variable stores the required matrix transformation.
+    '''
     astarnum=self.alphaStarNumerator()
     astardenom=self.alphaStarDenominator()
 
@@ -89,10 +101,14 @@ class CIFParser:
     ]
     self.ConversionMatrix=np.array(ConversionMatrix)
 
-    self.Atoms=[]
+    #The conversion matrix is passed to each new atom object to convert the spherical coordinates to Cartesian coordinates
+    #The reason the conversion matrix is not generated in each atom itself is because its unique to each CIF file's cell values.
     for j in textofInterest:
       self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix,self.covalentRadii))
 
+  '''
+  Start of auxilliary functions to help store values and conduct utility operations on all atoms of a given molecule.
+  '''
   def getElementAtoms(self,symbol):
     output=[]
     for j in range(len(self.Atoms)):
