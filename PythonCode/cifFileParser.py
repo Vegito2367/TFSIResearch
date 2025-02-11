@@ -7,14 +7,14 @@ class CIFParser:
   
   def __init__(self,filePath):
     #Stores the covalent radii of the metals of interest
-    self.covalentRadii={  
+    self.covalentRadii={  #Taken from some paper
       "Cu":1.32,
       "Ag":1.45,
       "Au":1.36,
       "Pt":1.36,
       "Pd":1.39,
       "Hg":1.32,
-      "Fe":1.52,
+      "Fe":1.52, #high spin variant
       "Ru":1.46
     }
   
@@ -133,6 +133,10 @@ class CIFParser:
       if(atom.identifier==identifier):
         return atom
     return "Atom Not Found"
+  
+  '''
+  Start of getter functions to make the matrix construction easier to read
+  '''
   
   def cos(self,x):
     return np.cos(x)

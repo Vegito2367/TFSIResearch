@@ -98,7 +98,7 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
 
 
 ######################################################End of SNSManipulation/Start of Torison Angle
-def TorisonAngle():
+def MetalBinding():
   folder="TFSI_NoDisorder" # Folder name containing all the CIF files
   allFileNames=os.listdir(folder)
   renderModule=Render()
@@ -214,7 +214,7 @@ def TorisonAngle():
     progress+=1
   
   #GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList)
-  # GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, {"Au":atomDictionaryList["Au"],"Ag":atomDictionaryList["Ag"]})
+  GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, {"Cu":atomDictionaryList["Cu"]})
   totalLen=[]
   metalBoundCount=0
   metalPresent=0
@@ -241,7 +241,7 @@ def TorisonAngle():
   print("Number of Avgs",len(bondlengthAverage))
   val = (metalBoundCount/totalSNS)*100
   print(f"The number of metals for fudge Factor 1 = {fudgeFactorMetalsBound[currentFudgeFactor]}")
-  renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency","Percentage")
+  #renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency","Percentage")
   '''
   Below code uses Render() class to create matplotlib graphs
   '''
@@ -253,7 +253,7 @@ def TorisonAngle():
 
 def GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList):
     for atom in atomDictionaryList:
-      InteractivePlot.plotInteractivePlot(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", True, f"WithCaption_{folder}_{atom}_SNS_Angle_BondLength")        
+      InteractivePlot.plotInteractivePlot(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", True, f"new-{atom}-graph")        
         
 ######################################################End of Torison Angle
 '''
@@ -298,7 +298,7 @@ Below code extracts data for several different moeities of TFSI
 
 
 def main():
-  TorisonAngle()
+  MetalBinding()
   
 main()
 
