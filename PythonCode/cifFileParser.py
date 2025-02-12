@@ -15,7 +15,12 @@ class CIFParser:
       "Pd":1.39,
       "Hg":1.32,
       "Fe":1.52, #high spin variant
-      "Ru":1.46
+      "Ru":1.46,
+    }
+
+    self.nonMetalRadii={ 
+      "N":0.71,
+      "S":1.05,
     }
   
     #S-N-S
@@ -104,7 +109,7 @@ class CIFParser:
     #The conversion matrix is passed to each new atom object to convert the spherical coordinates to Cartesian coordinates
     #The reason the conversion matrix is not generated in each atom itself is because its unique to each CIF file's cell values.
     for j in textofInterest:
-      self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix,self.covalentRadii))
+      self.Atoms.append(Atom(j.split(" "),self.ConversionMatrix,self.covalentRadii,self.nonMetalRadii))
 
   '''
   Start of auxilliary functions to help store values and conduct utility operations on all atoms of a given molecule.

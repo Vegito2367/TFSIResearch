@@ -1,6 +1,6 @@
 import numpy as np
 class Atom:
-  def __init__(self, inputList,conversionMatrix,radii):
+  def __init__(self, inputList,conversionMatrix,radii,nonMetalRadii):
     
     self.covalentRadius=0
     elemname=inputList.pop(0)
@@ -42,6 +42,8 @@ class Atom:
 
     if(self.symbol in radii):
       self.covalentRadius=radii[self.symbol]
+    elif(self.symbol in nonMetalRadii):
+      self.covalentRadius=nonMetalRadii[self.symbol]
   
   def __str__(self):
     return self.identifier

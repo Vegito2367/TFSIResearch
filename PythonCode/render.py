@@ -79,7 +79,7 @@ class Render:
     plt.title(title)
     plt.show()
   
-  def barGraphFrequencies(self,xData,yData, totalCount,title,xLabel, yLabel,ylabel2):
+  def barGraphFrequencies(self,xData,yData, totalCount,title,xLabel, yLabel,ylabel2,ulim):
     fig,ax1=plt.subplots()
     ax1.bar(xData,yData,color='blue',alpha=0.6)
     ax1.set_xlabel(xLabel)
@@ -88,7 +88,7 @@ class Render:
     ax2.set_ylabel(ylabel2,color='red')
     percentages=[round(100*yElem/totalCount,3) for yElem in yData]
     ax2.plot(xData,percentages,'r--',marker='o')
-    ax2.set_ylim(0,10)
+    ax2.set_ylim(0,ulim)
     plt.title(title)
     plt.show()
 

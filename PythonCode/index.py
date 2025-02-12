@@ -41,9 +41,10 @@ def getTorsionAngle(A,B,C,D):
 
 ######################################################SNSManipulation
 
-def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
+def IdentifySNSBonds(parser,lowerLimit,upperLimit,invalidFiles):
       sulphurs=[]
       nitrogens=[]
+      distanceValues={}
 
       nitrogens=parser.getElementAtoms("N")
       sulphurs=parser.getElementAtoms("S")
@@ -53,7 +54,7 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
         for s in sulphurs:
           distance=n.getDistance(s)
 
-          if(distance>=lowerLimit and distance<=upperLimit):
+          if(distance<=(n.covalentRadius+s.covalentRadius+1)):
             distanceValues[(n,s)]=distance
       
       if(len(distanceValues)==0):
@@ -66,11 +67,6 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
           occurences[i]+=1
         else:
           occurences[i]=1
-        
-        if(j in occurences.keys()):
-          occurences[j]+=1
-        else:
-          occurences[j]=1
         
       SNSBonds=[]
       for key in occurences.keys():#Cycles over each nitrogen atom in the occurence list
@@ -87,9 +83,9 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
 
             angle = getAngle(left.positionVector,center.positionVector,right.positionVector)
             g=Graph([left,center,right],angle)
-            #Separate the Export stuff from the SNS Bonds Identification
-            leftd=distanceValues[(g.center,g.left)]
-            rightd=distanceValues[(g.center,g.right)]
+            #Values used to create ExportUnit Objects that were used to create the excel sheet during the early days of the project
+            # leftd=distanceValues[(g.center,g.left)]
+            # rightd=distanceValues[(g.center,g.right)]
             
             #ExportData.append(ExportUnit(parser.fileName,g.bondAngle,[center,left],leftd,[center,right],rightd))
             SNSBonds.append(g)
@@ -97,10 +93,10 @@ def IdentifySNSAngles(parser,lowerLimit,upperLimit,invalidFiles,distanceValues):
 
 
 
-######################################################End of SNSManipulation/Start of Torison Angle
+######################################################  End of SNSManipulation/Start of Metal Binding Analysis
 def MetalBinding():
   folder="TFSI_NoDisorder" # Folder name containing all the CIF files
-  allFileNames=os.listdir(folder)
+  datasetPath=os.listdir(folder)
   renderModule=Render()
   AnglePlotValues=[]
   invalidFiles=[]
@@ -113,37 +109,37 @@ def MetalBinding():
   bondlengthAverage=[]
   
   fudgeFactorMetalsBound={}
-  testParse=CIFParser(os.path.join(folder,allFileNames[0]))
+  testParse=CIFParser(os.path.join(folder,datasetPath[0]))
   atomToLookFor=list(testParse.covalentRadii.keys()) # Retrieves the list of colavent radii for each atom
-  atomDictionaryList={} #Stores a list of atoms that are present in the compound for each atom
+  atomOccurences={} #Stores a list of atoms that are present in the compound for each atom
   fudgeFactor = [round(i * 0.1,1) for i in range(31)] #Cycles through various fudge factors from 0 till 3 angstrom for sensitivity analysis
   currentFudgeFactor=1 #Standard fudge factor used for the analysis in angstrom (10^-10m)
 
   for atom in atomToLookFor:
-    atomDictionaryList[atom]=[]
+    atomOccurences[atom]=[]
   
   for factor in fudgeFactor:
     fudgeFactorMetalsBound[factor]=0
   
-  ExportDataTorsion=[]
-  #Variables for Torsion Angle block of code
   
-  # TorisonAngleAverages=[]
-  # torsionDeltas=[]
+  #Variables for Torsion Angle block of code
+  #ExportDataTorsion=[]
+  TorisonAngleAverages=[]
+  torsionDeltas=[]
     
 
   
-  for file in allFileNames:
+  for file in datasetPath:
     
-    print(f"Progress: {progress}/{len(allFileNames)}")
+    print(f"Progress: {progress}/{len(datasetPath)}")
     try:
         parser=CIFParser(f"{folder}/{file}")
         if(not parser.validFile):
           invalidFiles.append([file,"Invalid Input"])
           progress+=1
           continue
-        distanceValues={}
-        SNSBonds=IdentifySNSAngles(parser,1.5,1.7,invalidFiles,distanceValues)
+
+        SNSBonds=IdentifySNSBonds(parser,1.5,1.7,invalidFiles)
         totalSNS+=len(SNSBonds)
         for bond in SNSBonds:
           temp=[]
@@ -153,58 +149,62 @@ def MetalBinding():
           
           bondlengthAverage.append((temp[0]+temp[1])/2)
           bondlengthDeltas.append(abs(temp[0]-temp[1]))
+          AnglePlotValues.append(bond.bondAngle)
+
           for atomSymbol in atomToLookFor:
             surroundingAtoms = parser.getAtomsInARadius(bond.center,3)
-            cobalt=False
+            metalBound=False
             for atom,distance in surroundingAtoms:
               if(atom.symbol==atomSymbol):#Checks if the given atom is one of the metals we are looking for
-                if(not cobalt):
+                if(not metalBound):
 
                   for factor in fudgeFactor:
                     if(distance<=(bond.center.covalentRadius + atom.covalentRadius+factor)):
                       fudgeFactorMetalsBound[factor]+=1
 
                   if(distance<=(bond.center.covalentRadius + atom.covalentRadius+currentFudgeFactor)):
-                    atomDictionaryList[atomSymbol].append("Metal present and N-bound to TFSI")  #The atom symbol is counted as a metal connected to the TFSI
-                    cobalt=True
+                    atomOccurences[atomSymbol].append("Metal present and N-bound to TFSI")  #The atom symbol is counted as a metal connected to the TFSI
+                    metalBound=True
             
-            if(not cobalt):
+            if(not metalBound):
               if(parser.containsAtom(atomSymbol)):
-                atomDictionaryList[atomSymbol].append("Metal present but not N–bound to TFSI")  #The atom symbol is present in the compound but not connected to the TFSI
+                atomOccurences[atomSymbol].append("Metal present but not N–bound to TFSI")  #The atom symbol is present in the compound but not connected to the TFSI
               else:
-                atomDictionaryList[atomSymbol].append("No metal present in the structure")
+                atomOccurences[atomSymbol].append("No metal present in the structure")
 
-          AnglePlotValues.append(bond.bondAngle)
-          #Below code calculates torsion angles and adds them to graph data
+          
           '''
-          carbons = parser.getElementAtoms("C")
-          cDistLeft,cDistRight=100,100
-          cLeft,cRight=None,None
-          for c in carbons:
-            distL=bond.left.getDistance(c)
-            distR=bond.right.getDistance(c)
-            if(distL<cDistLeft):
-              cDistLeft=distL
-              cLeft=c
-            if(distR<cDistRight):
-              cDistRight=distR
-              cRight=c
-          if(cLeft is not None and cRight is not None):
-            bond.addBond(bond.left,cLeft,cDistLeft)
-            bond.addBond(bond.right,cRight,cDistRight)
+          Below code calculates torsion angles and adds them to graph data
+          '''
+          # carbons = parser.getElementAtoms("C")
+          # cDistLeft,cDistRight=100,100
+          # cLeft,cRight=None,None
+          # for c in carbons:
+          #   distL=bond.left.getDistance(c)
+          #   distR=bond.right.getDistance(c)
+          #   if(distL<cDistLeft):
+          #     cDistLeft=distL
+          #     cLeft=c
+          #   if(distR<cDistRight):
+          #     cDistRight=distR
+          #     cRight=c
+          # if(cLeft is not None and cRight is not None):
+          #   bond.addBond(bond.left,cLeft,cDistLeft)
+          #   bond.addBond(bond.right,cRight,cDistRight)
             
           
-          #Right Torsion Angle
-          A1,B1,C1,D1 = bond.left,bond.center,bond.right,cRight
-          TorisonAngleRight=getTorsionAngle(A1,B1,C1,D1)
-          TorisonAngleLeft=getTorsionAngle(C1,B1,A1,cLeft)
+          # #Right Torsion Angle
+          # A1,B1,C1,D1 = bond.left,bond.center,bond.right,cRight
+          # TorisonAngleRight=getTorsionAngle(A1,B1,C1,D1)
+          # TorisonAngleLeft=getTorsionAngle(C1,B1,A1,cLeft)
           
-          TorisonAngleAverages.append((TorisonAngleRight+TorisonAngleLeft)/2)
-          torsionDeltas.append(abs(TorisonAngleRight-TorisonAngleLeft))
-          ExportDataTorsion.append(ExportUnit(file,bond.bondAngle,[A1,B1,C1,D1],TorisonAngleRight,[C1,B1,A1,cLeft],TorisonAngleLeft))
-          '''
+          # TorisonAngleAverages.append((TorisonAngleRight+TorisonAngleLeft)/2)
+          # torsionDeltas.append(abs(TorisonAngleRight-TorisonAngleLeft))
+          #ExportDataTorsion.append(ExportUnit(file,bond.bondAngle,[A1,B1,C1,D1],TorisonAngleRight,[C1,B1,A1,cLeft],TorisonAngleLeft))
+          #names.append(f"{file} {bond.left} {bond.center} {bond.right} {TorsionAngleAverages[-1]}") - Alternative names append
           
           names.append(f"{file} {bond.left} {bond.center} {bond.right}")
+          
           
     except Exception as e:
       invalidFiles.append(file)
@@ -213,22 +213,23 @@ def MetalBinding():
     
     progress+=1
   
-  #GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList)
-  GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, {"Cu":atomDictionaryList["Cu"]})
+  #GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomOccurences)
+  #GenerateTorsionAngles(folder, TorisonAngleAverages, names, bondlengthAverage, atomOccurences)
+  #GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, {"Au":atomOccurences["Au"]})
   totalLen=[]
   metalBoundCount=0
   metalPresent=0
   MetalPresenceCount=0
-  for atomSymbol in atomDictionaryList:
-    metalCount=atomDictionaryList[atomSymbol].count("Metal present and N-bound to TFSI")
-    metalPresent=atomDictionaryList[atomSymbol].count("Metal present but not N–bound to TFSI")
+  for atomSymbol in atomOccurences:
+    metalCount=atomOccurences[atomSymbol].count("Metal present and N-bound to TFSI")
+    metalPresent=atomOccurences[atomSymbol].count("Metal present but not N–bound to TFSI")
     totalLen.append([metalCount,atomSymbol])
     metalBoundCount+=metalCount
     MetalPresenceCount+=(metalCount+metalPresent)
-    print(f"Percentage presence of {atomSymbol} {(metalCount/len(atomDictionaryList[atomSymbol])*100):0.6f}")
-    temp.append((atomDictionaryList[atomSymbol].count(atomSymbol)/len(atomDictionaryList[atomSymbol])*100))
+    print(f"Percentage presence of {atomSymbol} {(metalCount/len(atomOccurences[atomSymbol])*100):0.6f}")
+    temp.append((atomOccurences[atomSymbol].count(atomSymbol)/len(atomOccurences[atomSymbol])*100))
   
-  #Each list in atomDictionaryList has length = total number of compounds
+  #Each list in atomOccurences has length = total number of compounds
   histX=[]
   histY=[]
   for num,symbol in totalLen:
@@ -241,23 +242,28 @@ def MetalBinding():
   print("Number of Avgs",len(bondlengthAverage))
   val = (metalBoundCount/totalSNS)*100
   print(f"The number of metals for fudge Factor 1 = {fudgeFactorMetalsBound[currentFudgeFactor]}")
-  #renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency","Percentage")
   '''
   Below code uses Render() class to create matplotlib graphs
   '''
-  # renderModule.barGraphFrequencies(["Metal bound to\nnitrogen in structure","Metal not bound\nbut present in structure"],[metalBoundCount,MetalPresenceCount],totalSNS,"","","Frequency","Percentage of all\nmetal-containing structures")
-  #renderModule.barGraph(["Metal-containing","Metal-free"],[MetalPresenceCount,totalSNS-MetalPresenceCount],"","","Frequency")
-  # renderModule.plotHistogram(AnglePlotValues,"SNS Angle Spread","Angle (deg)","Frequency")
-  # renderModule.plotHistogram(bondlengthAverage,"SN Distance Spread","SN Distance (Ang)","Frequency")
-  # renderModule.plotLine(list(fudgeFactorMetalsBound.keys()),list(fudgeFactorMetalsBound.values()),"Sensitivity Analysis the Fudge Factor","Fudge Factor","Frequency of N bound metals")
 
-def GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomDictionaryList):
-    for atom in atomDictionaryList:
-      InteractivePlot.plotInteractivePlot(AnglePlotValues, bondlengthAverage,names,atomDictionaryList[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", True, f"new-{atom}-graph")        
+  renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency","Percentage",20)
+  renderModule.barGraphFrequencies(["Metal bound to\nnitrogen in structure","Metal not bound\nbut present in structure"],[metalBoundCount,MetalPresenceCount],totalSNS,"","","Frequency","Percentage of all\nmetal-containing structures",40)
+  renderModule.barGraph(["Metal-containing","Metal-free"],[MetalPresenceCount,totalSNS-MetalPresenceCount],"","","Frequency")
+  renderModule.plotHistogram(AnglePlotValues,"SNS Angle Spread","Angle (deg)","Frequency")
+  renderModule.plotHistogram(bondlengthAverage,"SN Distance Spread","SN Distance (Ang)","Frequency")
+  renderModule.plotLine(list(fudgeFactorMetalsBound.keys()),list(fudgeFactorMetalsBound.values()),"Sensitivity Analysis the Fudge Factor","Fudge Factor","Frequency of N bound metals")
+
+def GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomOccurences):
+    for atom in atomOccurences:
+      InteractivePlot.plotInteractivePlot(AnglePlotValues, bondlengthAverage,names,atomOccurences[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", False, f"new-{atom}-graph")
+
+def GenerateTorsionAngles(folder, TorsionAngles, names, bondlengthAverage, atomOccurences):
+    for atom in atomOccurences:
+      InteractivePlot.plotInteractivePlot(TorsionAngles, bondlengthAverage,names,atomOccurences[atom],"Torsion Angle (°)","Bond Length Avg (Å)",f"Torsion angle average vs. average S—N bond length for structures containing {atom}", False, f"new-{atom}-graph")         
         
 ######################################################End of Torison Angle
 '''
-Below code extracts data for several different moeities of TFSI
+Below code extracts data for several different moeities of TFSI from an excel sheet input
 '''
 # def getDataFromExcelFiles():
 #   # Define variable to load the dataframe
