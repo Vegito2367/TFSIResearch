@@ -7,6 +7,7 @@ from interactiveGraphs import InteractivePlot
 import pandas as pd
 from collections import Counter
 
+
 '''
 Vector math utilities
 '''
@@ -45,7 +46,7 @@ def IdentifySNSBonds(parser,lowerLimit,upperLimit,invalidFiles):
       sulphurs=[]
       nitrogens=[]
       distanceValues={}
-
+      occurences={}
       nitrogens=parser.getElementAtoms("N")
       sulphurs=parser.getElementAtoms("S")
       
@@ -56,20 +57,17 @@ def IdentifySNSBonds(parser,lowerLimit,upperLimit,invalidFiles):
 
           if(distance<=(n.covalentRadius+s.covalentRadius+1)):
             distanceValues[(n,s)]=distance
+            if(n in occurences):
+              occurences[n]+=1
+            else:
+              occurences[n]=1
       
       if(len(distanceValues)==0):
         invalidFiles.append([parser.fileName,"No S-N bonds found"])
-        
-      
-      occurences={}
-      for (i,j) in distanceValues:
-        if(i in occurences.keys()):
-          occurences[i]+=1
-        else:
-          occurences[i]=1
+
         
       SNSBonds=[]
-      for key in occurences.keys():#Cycles over each nitrogen atom in the occurence list
+      for key in occurences:#Cycles over each nitrogen atom in the occurence list
         left,right,center=None,None,None
         if(occurences[key]>=2 and key.symbol=="N"):
             center=key
@@ -246,12 +244,13 @@ def MetalBinding():
   Below code uses Render() class to create matplotlib graphs
   '''
 
-  renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency","Percentage",20)
-  renderModule.barGraphFrequencies(["Metal bound to\nnitrogen in structure","Metal not bound\nbut present in structure"],[metalBoundCount,MetalPresenceCount],totalSNS,"","","Frequency","Percentage of all\nmetal-containing structures",40)
-  renderModule.barGraph(["Metal-containing","Metal-free"],[MetalPresenceCount,totalSNS-MetalPresenceCount],"","","Frequency")
-  renderModule.plotHistogram(AnglePlotValues,"SNS Angle Spread","Angle (deg)","Frequency")
-  renderModule.plotHistogram(bondlengthAverage,"SN Distance Spread","SN Distance (Ang)","Frequency")
-  renderModule.plotLine(list(fudgeFactorMetalsBound.keys()),list(fudgeFactorMetalsBound.values()),"Sensitivity Analysis the Fudge Factor","Fudge Factor","Frequency of N bound metals")
+  # renderModule.barGraphFrequencies(histX,histY,totalSNS,"Metal Presence in Compound","Element","Frequency","Percentage",20)
+  # renderModule.barGraphFrequencies(["Metal bound to\nnitrogen in structure","Metal not bound\nbut present in structure"],[metalBoundCount,MetalPresenceCount],totalSNS,"","","Frequency","Percentage of all\nmetal-containing structures",40)
+  # renderModule.barGraph(["Metal-containing","Metal-free"],[MetalPresenceCount,totalSNS-MetalPresenceCount],"","","Frequency")
+  # renderModule.plotHistogram(AnglePlotValues,"SNS Angle Spread","Angle (deg)","Frequency")
+  # renderModule.plotHistogram(bondlengthAverage,"SN Distance Spread","SN Distance (Ang)","Frequency")
+  # renderModule.plotLine(list(fudgeFactorMetalsBound.keys()),list(fudgeFactorMetalsBound.values()),"Sensitivity Analysis the Fudge Factor","Fudge Factor","Frequency of N bound metals")
+  ExportUnit.exportPairValues(AnglePlotValues,bondlengthAverage,atomOccurences)
 
 def GenerateAllGraphs(folder, AnglePlotValues, names, bondlengthAverage, atomOccurences):
     for atom in atomOccurences:
@@ -261,6 +260,10 @@ def GenerateTorsionAngles(folder, TorsionAngles, names, bondlengthAverage, atomO
     for atom in atomOccurences:
       InteractivePlot.plotInteractivePlot(TorsionAngles, bondlengthAverage,names,atomOccurences[atom],"Torsion Angle (°)","Bond Length Avg (Å)",f"Torsion angle average vs. average S—N bond length for structures containing {atom}", False, f"new-{atom}-graph")         
         
+def GenerateExcelSheets(folder, AnglePlotValues, names, bondlengthAverage, atomOccurences):
+    for atom in atomOccurences:
+      InteractivePlot.plotInteractivePlot(AnglePlotValues, bondlengthAverage,names,atomOccurences[atom],"SNS Angle (°)","Bond Length Avg (Å)",f"S—N—S angle vs. average S—N bond length for structures containing {atom}", False, f"new-{atom}-graph")
+
 ######################################################End of Torison Angle
 '''
 Below code extracts data for several different moeities of TFSI from an excel sheet input

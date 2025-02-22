@@ -35,6 +35,26 @@ class ExportUnit:
       exportSheet.write(row+1,3,data.doubleProperty2)
       row+=3
     exportGrid.close()  # Close exportGrid workbook
+  
+  @staticmethod
+  def exportPairValues(AnglePlotValues, bondlengthAverage, atomOccurences):
+    #values1, values2, label1,label2, sheetTitle
+    exportGrid = xl.Workbook("OriginFileForFynn.xlsx")
+    for atom in atomOccurences:
+      exportSheet = exportGrid.add_worksheet(f"{atom} - Graph")
+      exportSheet.write(0,1,"Angles")
+      exportSheet.write(0,2,"Bond Length Average")
+      row = 1
+      for angle,bondAverage,presence in zip(AnglePlotValues,bondlengthAverage,atomOccurences[atom]):
+        exportSheet.write(row,1,angle)
+        exportSheet.write(row,2,bondAverage)
+        if(presence=="Metal present and N-bound to TFSI"):
+          exportSheet.write(row,3,"Metal present and N-bound to TFSI")
+        row+=1
+    
+    exportGrid.close()
+      
+    
 
   
 class Render:
