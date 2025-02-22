@@ -31,3 +31,16 @@ Install the required packages using:
 - `cifFileParser.py`: TFSI structural analysis functions
 - `render.py`: Plotting and visualization functions
 - `heatmap.py`: Interactive rendering
+
+## cifFileParser.py - Utility functions
+-	`getElementAtoms(self, symbol)` : Returns a list of atoms with a particular symbol after linearly searching through self.Atoms[].
+-	`containsAtom(self, symbol)` : Checks whether the current molecule contains an atom of given symbol.
+-	`getAtomsInARadius(self, targetAtom, radius)` : returns a list of atoms after performing a wave emanating search of size ‘radius’. The function looks for all atoms with a Euclidean distance of less than radius and returns a list.
+-	`getParticularAtom(self, identifier)` : Returns a particular atom object based on its identifier (ex. C57).
+
+## Atom.py - Utility functions
+- `getDistance(self,other)` : Returns the Euclidean distance between the position vectors of the current atom and the “other” atom.
+- `__eq__(self,other)` : Operator overload for the “==” operator. Makes it so that if two atoms and compared using the “==” operator, the output depends on whether the two atoms have the exact same position vector, whereas otherwise the “==” would compare the two objects’ memory addresses.
+- `__hash__(self)` : Defines what should the hashing input be when generating the hash of an atom. The position vector is unique to each atom and thus, is used as a hashing input.
+
+
