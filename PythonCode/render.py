@@ -39,7 +39,7 @@ class ExportUnit:
   @staticmethod
   def exportPairValues(AnglePlotValues, bondlengthAverage, atomOccurences):
     #values1, values2, label1,label2, sheetTitle
-    exportGrid = xl.Workbook("OriginFileForFynn.xlsx")
+    exportGrid = xl.Workbook("ExcelFileWithThreeCats.xlsx")
     for atom in atomOccurences:
       exportSheet = exportGrid.add_worksheet(f"{atom} - Graph")
       exportSheet.write(0,1,"Angles")
@@ -49,10 +49,17 @@ class ExportUnit:
         exportSheet.write(row,1,angle)
         exportSheet.write(row,2,bondAverage)
         if(presence=="Metal present and N-bound to TFSI"):
-          exportSheet.write(row,3,"Metal present and N-bound to TFSI")
+          exportSheet.write(row,3,1)
+        elif(presence=="Metal present but not N–bound to TFSI"):
+          exportSheet.write(row,3,2)
+        else:
+          exportSheet.write(row,3,0)
         row+=1
     
     exportGrid.close()
+  @staticmethod
+  def exportXY(xData,yData,xTitle,yTitle):
+    pass
       
     
 
