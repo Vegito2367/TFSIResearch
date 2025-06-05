@@ -1,6 +1,6 @@
-# TFSI Crystallography Analysis
+# TFSI Crystallography Analysis using PyCIFTer
 
-This repository contains Python code for analyzing X-ray crystallographic data of bis(trifluoromethanesulfonyl)imide (TFSI) compounds. View at:
+This repository contains Python code for PyCIFTer, a program I made to analyze X-ray crystallographic data of bis(trifluoromethanesulfonyl)imide (TFSI) compounds. View at:
 
 [Graphs Dashboard Here](https://tfsi-research.vercel.app/)
 
